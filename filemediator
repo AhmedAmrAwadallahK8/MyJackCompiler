@@ -1,0 +1,19 @@
+import sys
+import os
+
+
+def extract(file_name):
+    file_contents = []
+    with open(file_name, 'r') as f:
+        for l in f:
+            file_contents.append(l)
+    return file_contents
+
+
+
+output = extract('testtext')
+print(output)
+
+
+
+
