@@ -25,6 +25,7 @@ def extract_folder(folder_name):
     folder_path = origin_path + '/' + folder_name
     os.chdir(folder_path)
     file_list = os.listdir()
+    os.chdir(origin_path)
     return {"path": folder_path, "files": file_list}
 
 
