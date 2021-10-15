@@ -10,7 +10,6 @@ def extract(file_name):
     return file_contents
 
 
-
 output = extract('testtext')
 print(output)
 
