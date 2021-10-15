@@ -13,6 +13,7 @@ def folder_test(file_name):
     file_path = origin_path + '/' + file_name
     return os.path.isdir(file_path)
 
+
 def jack_test(file_name):
     """Tests if the input file is a jack file
 
@@ -24,6 +25,7 @@ def jack_test(file_name):
         return False
     else:
         return True
+
 
 def extract_folder_files(folder_name):
     """Extract all data from the jack files in a directory
@@ -43,13 +45,13 @@ def extract_folder_files(folder_name):
     return jack_code
 
 
-
 def main(sys_input):
     jack_code = []
     is_folder = folder_test(sys_input)
     if is_folder:
-        pass
-
+        jack_code = extract_folder_files(sys_input)
+    elif jack_test(sys_input):
+        jack_code = fm.extract_file(sys_input)
 
     return
 
