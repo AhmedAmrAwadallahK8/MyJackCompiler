@@ -1,4 +1,3 @@
-import sys
 import os
 
 
@@ -27,14 +26,6 @@ def extract_folder(folder_name):
     file_list = os.listdir()
     os.chdir(origin_path)
     return {"path": folder_path, "files": file_list}
-
-
-output = extract_file('testtext.txt')
-print(output)
-print(os.getcwd())
-output = extract_folder('testdirec')
-print(output)
-print(os.getcwd())
 
 
 
