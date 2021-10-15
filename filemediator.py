@@ -15,7 +15,7 @@ def extract_file(file_name):
 
 
 def extract_folder(folder_name):
-    """
+    """ Takes a folder and reports its path and the list of files within the folder
 
     :param folder_name: (String) Name of folder
     :return: (Dictionary) Folders Path and List of files
