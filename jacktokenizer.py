@@ -9,6 +9,7 @@ class JackTokenizer:
     def __init__(self, jack_code, file_name):
         self.file_name = file_name
         self.jack_code = jack_code
+        self.index = 0
         self.tack_code = []  # Tokenized Jack Code
 
     def get_file_name(self):
@@ -24,6 +25,23 @@ class JackTokenizer:
         :return: (List) List of JackToken objects
         """
         return self.tack_code
+
+    def get_index_tack(self):
+        """Getter
+
+        :return: JackToken object at the index specified
+        """
+        return self.tack_code[self.index]
+
+    def advance(self):
+        """Increment index by 1 if index is within the lists length otherwise set index to be equal to -1
+
+        :return: None
+        """
+        if self.index < len(self.tack_code) - 1:
+            self.index += 1
+        else:
+            self.index = -1
 
     def make_tokens(self):
         """Converts Jack code into Tokenized Jack Code. This information is stored in the object variable tack_code
