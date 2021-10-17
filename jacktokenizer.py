@@ -6,7 +6,8 @@ class JackTokenizer:
                'void', 'true', 'false', 'null', 'this', 'let', 'do', 'if', 'else', 'while', 'return']
     symbol = ['{', '}', '(', ')', '[', ']', '.', ',', ';', '+', '-', '*', '/', '&', '|', '<', '>', '=', '~']
 
-    def __init__(self, jack_code):
+    def __init__(self, jack_code, file_name):
+        self.file_name = file_name
         self.jack_code = jack_code
         self.tack_code = []  # Tokenized Jack Code
 
