@@ -5,44 +5,41 @@ class JackTokenizer:
     keyword = ['class', 'constructor', 'function', 'method', 'field', 'static', 'var', 'int', 'char', 'boolean',
                'void', 'true', 'false', 'null', 'this', 'let', 'do', 'if', 'else', 'while', 'return']
     symbol = ['{', '}', '(', ')', '[', ']', '.', ',', ';', '+', '-', '*', '/', '&', '|', '<', '>', '=', '~']
-    #integerConstant
-    #StringConstant "sadjaodoa"
-    #identifier (names of method or vars etc)
 
     def __init__(self, jack_code):
         self.jack_code = jack_code
         self.tack_code = [] #Tokenized Jack Code
 
     def get_tack_code(self):
-        '''Getter
+        """Getter
 
         :return: (List) List of JackToken objects
-        '''
+        """
         return self.tack_code
 
     def make_tokens(self):
-        '''Converts Jack code into Tokenized Jack Code. This information is stored in the object variable tack_code
+        """Converts Jack code into Tokenized Jack Code. This information is stored in the object variable tack_code
 
         :return: None
-        '''
-        print('enetered make tokens')
+        """
+
         def handle_string(substr):
-            '''Takes in a substring and extracts information necessary for making a StringConstant token
+            """Takes in a substring and extracts information necessary for making a StringConstant token
 
             :param substr: (String) substring that contains a StringConstant
             :return: (Int) Length of the StringConstant within the substr
                      (String) The extracted StringConstant from the substr
-            '''
+            """
             end_ind = substr.find('"')
             return len(substr[:end_ind]), '"' + substr[:end_ind] + '"'
 
         def handle_int(substr):
-            '''Takes in a substring and extracts information necessary for making a integerConstant token
+            """Takes in a substring and extracts information necessary for making a integerConstant token
 
             :param substr: (String) substring that contains an integerConstant
             :return: (Int) Length of the integerConstant within the substr
                      (String) The extracted integerConstant within the substr
-            '''
+            """
             end_ind = 0
             for i, char in enumerate(substr):
                 if char.isdigit():
@@ -56,40 +53,31 @@ class JackTokenizer:
         for line in self.jack_code:
             print(line)
             mid_line = ''
-            o_i = 0
+            o_i = 0  # Index where the line has already been processed up to
             i = 1
             while i <= len(line):
-                print(line)
-                mid_line = line[o_i:]
-                tok = line[o_i:i]
-                next_char = line[i:i+1]
-                print('___________________')
-                print('CurrentTok:' + tok)
-                print('NextTokChar:' + next_char)
-                if tok == ' ':
+                mid_line = line[o_i:]  # Rest of the line that hasn't been tokenized yet
+                tok = line[o_i:i]  # Possible token of size i - o_i
+                next_char = line[i:i+1]  # Next character in the in the line
+                if tok == ' ':  # Skip Spaces
                     o_i = i
-                elif tok == '"':
-                    print('Entered String')
+                elif tok == '"':  # Quotes indicate a StringConstant Token
                     len_str_tok, str_tok = handle_string(mid_line[1:])
                     self.tack_code.append(t.JackToken('StringConstant', str_tok))
-                    i += 1 + len_str_tok
+                    i += 1 + len_str_tok  # Move the index past the entire string that handle_string found
                     o_i = i
-                elif tok.isdigit():
-                    print('Entered Integer')
+                elif tok.isdigit():  # Condition indicates a integerConstant Token is present
                     len_int_tok, int_tok = handle_int(mid_line)
                     self.tack_code.append(t.JackToken('integerConstant', int_tok))
-                    i += len_int_tok - 1
+                    i += len_int_tok - 1  # Move the index past the entire integer that handle_int found
                     o_i = i
-                elif tok in self.symbol:
-                    print('Entered Symbol')
+                elif tok in self.symbol:  # Condition indicates a Symbol Token is present
                     self.tack_code.append(t.JackToken('symbol', tok))
                     o_i = i
-                elif tok in self.keyword:
-                    print('Entered Keyword')
+                elif tok in self.keyword:  # Condition indicates a Keyword Token is present
                     self.tack_code.append(t.JackToken('keyword', tok))
                     o_i = i
-                elif next_char in self.symbol or next_char == ' ':
-                    print('Entered identifier statement')
+                elif next_char in self.symbol or next_char == ' ':  # Condition indicates a Identifier token is present
                     self.tack_code.append(t.JackToken('identifier', tok))
                     o_i = i
                 i += 1
