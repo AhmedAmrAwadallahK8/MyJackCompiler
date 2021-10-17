@@ -8,7 +8,7 @@ class JackTokenizer:
 
     def __init__(self, jack_code):
         self.jack_code = jack_code
-        self.tack_code = [] #Tokenized Jack Code
+        self.tack_code = []  # Tokenized Jack Code
 
     def get_tack_code(self):
         """Getter
@@ -83,7 +83,7 @@ class JackTokenizer:
                 i += 1
 
 
-test_list1 = ['field int x, y;']
+'''test_list1 = ['field int x, y;']
 
 
 test_list2 = ['class Square {', 'field int x, y;', 'constructor Square new(int Ax, int Ay, int Asize) {', 'let x = Ax;',
@@ -97,7 +97,7 @@ tokenize.make_tokens()
 token_list = tokenize.get_tack_code()
 print(token_list)
 for token in token_list:
-    print(token.get_data())
+    print(token.get_data())'''
 
 
 
