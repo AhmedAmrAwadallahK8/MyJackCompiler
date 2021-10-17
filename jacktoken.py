@@ -10,3 +10,17 @@ class JackToken:
         """
         data = vars(self)
         return data
+
+    def get_variety(self):
+        """Getter
+
+        :return: (String) Variety description of token
+        """
+        return self.variety
+
+    def get_val(self):
+        """Getter
+
+        :return: (String) Token value
+        """
+        return self.val
