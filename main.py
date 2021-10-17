@@ -41,7 +41,7 @@ def extract_folder_files(folder_name):
     os.chdir(folder_info['path'])
     for file in file_list:
         if jack_test(file):
-            jack_code = jack_code.append((file, fm.extract_file(file)))
+            jack_code.append((file, fm.extract_file(file)))
     os.chdir(origin_direc)
     return jack_code
 
@@ -55,15 +55,6 @@ def main(sys_input):
         jack_code.append((sys_input, fm.extract_file(sys_input)))
 
     return
-
-
-
-
-
-
-
-
-
 
 
 
