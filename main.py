@@ -31,7 +31,8 @@ def extract_folder_files(folder_name):
     """Extract all data from the jack files in a directory
 
     :param folder_name: (String) Name of folder
-    :return: (List) List of lines of all jack code present in every file
+    :return: (List) List of tuples. Tuple is of length 2 and countains a String(The file name) and a list of Strings
+             that represent the file contents
     """
     jack_code = []
     folder_info = fm.extract_folder(folder_name)
@@ -40,7 +41,7 @@ def extract_folder_files(folder_name):
     os.chdir(folder_info['path'])
     for file in file_list:
         if jack_test(file):
-            jack_code = jack_code + fm.extract_file(file)
+            jack_code = jack_code.append((file, fm.extract_file(file)))
     os.chdir(origin_direc)
     return jack_code
 
@@ -51,7 +52,7 @@ def main(sys_input):
     if is_folder:
         jack_code = extract_folder_files(sys_input)
     elif jack_test(sys_input):
-        jack_code = fm.extract_file(sys_input)
+        jack_code.append((sys_input, fm.extract_file(sys_input)))
 
     return
 
