@@ -6,11 +6,12 @@ class JackTokenizer:
                'void', 'true', 'false', 'null', 'this', 'let', 'do', 'if', 'else', 'while', 'return']
     symbol = ['{', '}', '(', ')', '[', ']', '.', ',', ';', '+', '-', '*', '/', '&', '|', '<', '>', '=', '~']
 
-    def __init__(self, jack_code, file_name):
+    def __init__(self, file_name, jack_code):
         self.file_name = file_name
         self.jack_code = jack_code
         self.index = 0
         self.tack_code = []  # Tokenized Jack Code
+        self.make_tokens()
 
     def get_file_name(self):
         """Getter
@@ -26,7 +27,7 @@ class JackTokenizer:
         """
         return self.tack_code
 
-    def get_index_tack(self):
+    def get_ind_token(self):
         """Getter
 
         :return: JackToken object at the index specified
@@ -77,7 +78,6 @@ class JackTokenizer:
             return len(out_int), out_int
 
         for line in self.jack_code:
-            print(line)
             mid_line = ''
             o_i = 0  # Index where the line has already been processed up to
             i = 1
