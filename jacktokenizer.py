@@ -11,6 +11,13 @@ class JackTokenizer:
         self.jack_code = jack_code
         self.tack_code = []  # Tokenized Jack Code
 
+    def get_file_name(self):
+        """Getter
+
+        :return: (String) The String the represents the name of the life
+        """
+        return self.file_name
+
     def get_tack_code(self):
         """Getter
 
