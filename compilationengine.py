@@ -35,23 +35,22 @@ class CompilationEngine:
         self.tab_num += 1
         out_xml = '\t'*self.tab_num
         out_xml += '<classVarDec>\n'
-        if self.current_token.get_val() == 'static' or self.current_token.get_val() == 'field':
-            self.tab_num += 1
-            # Expect Keyword = static or field
-            out_xml += self.xml_snippet_ll_1()
-            # Expect a type
+        self.tab_num += 1
+        # Expect Keyword = static or field
+        out_xml += self.xml_snippet_ll_1()
+        # Expect a type
+        out_xml += self.xml_snippet_ll_1()
+        # Expect a variable name
+        out_xml += self.xml_snippet_ll_1()
+        # Expect ; or expect more variable names
+        while self.current_token.get_val() != ';':
+            # Expect a comma
             out_xml += self.xml_snippet_ll_1()
             # Expect a variable name
             out_xml += self.xml_snippet_ll_1()
-            # Expect ; or expect more variable names
-            while self.current_token.get_val() != ';':
-                # Expect a comma
-                out_xml += self.xml_snippet_ll_1()
-                # Expect a variable name
-                out_xml += self.xml_snippet_ll_1()
-            # Expect a ;
-            out_xml += self.xml_snippet_ll_1()
-            self.tab_num -= 1
+        # Expect a ;
+        out_xml += self.xml_snippet_ll_1()
+        self.tab_num -= 1
         out_xml += '\t' * self.tab_num
         out_xml += '</classVarDec>\n'
         self.tab_num -= 1
@@ -65,23 +64,22 @@ class CompilationEngine:
         self.tab_num += 1
         out_xml = '\t' * self.tab_num
         out_xml += '<varDec>\n'
-        if self.current_token.get_val() == 'var':
-            self.tab_num += 1
-            # Expect Keyword = var
-            out_xml += self.xml_snippet_ll_1()
-            # Expect a type
+        self.tab_num += 1
+        # Expect Keyword = var
+        out_xml += self.xml_snippet_ll_1()
+        # Expect a type
+        out_xml += self.xml_snippet_ll_1()
+        # Expect a variable name
+        out_xml += self.xml_snippet_ll_1()
+        # Expect ; or expect more variable names
+        while self.current_token.get_val() != ';':
+            # Expect a comma
             out_xml += self.xml_snippet_ll_1()
             # Expect a variable name
             out_xml += self.xml_snippet_ll_1()
-            # Expect ; or expect more variable names
-            while self.current_token.get_val() != ';':
-                # Expect a comma
-                out_xml += self.xml_snippet_ll_1()
-                # Expect a variable name
-                out_xml += self.xml_snippet_ll_1()
-            # Expect a ;
-            out_xml += self.xml_snippet_ll_1()
-            self.tab_num -= 1
+        # Expect a ;
+        out_xml += self.xml_snippet_ll_1()
+        self.tab_num -= 1
         out_xml += '\t' * self.tab_num
         out_xml += '</varDec>\n'
         self.tab_num -= 1
