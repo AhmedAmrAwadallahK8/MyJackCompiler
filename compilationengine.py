@@ -13,6 +13,10 @@ class CompilationEngine:
         self.current_token = self.current_tokenizer.get_ind_token()
 
     def next_token(self):
+        """Advance to the next token if there is one otherwise report no tokens left to console
+
+        :return: (None)
+        """
         self.current_tokenizer.advance()
         if self.current_tokenizer.get_ind != -1:
             self.current_token = self.current_tokenizer.get_ind_token()
@@ -20,12 +24,22 @@ class CompilationEngine:
             print('No more tokens left')
 
     def start_rule(self, rule):
+        """Returns xml code that represents the beginning of a rule and increments number of tabs by 1
+
+        :param rule: (String) Rule we are parsing
+        :return: (String) XML Representation
+        """
         self.tab_num += 1
         out_xml = '\t' * self.tab_num
         out_xml += '<' + rule + '>\n'
         return out_xml
 
     def end_rule(self, rule):
+        """Returns xml code that represents the end of a rule and decrements number of tabs by 1
+
+        :param rule: (String) Rule we are parsing
+        :return: (String) XML Representation
+        """
         out_xml = '\t' * self.tab_num
         out_xml += '</' + rule + '>\n'
         self.tab_num -= 1
@@ -96,6 +110,10 @@ class CompilationEngine:
         return "Incomplete method"
 
     def compile_while_statement(self):
+        """Responsible for parsing a while statement
+
+        :return: (String) XML representation
+        """
         out_xml = self.start_rule('whileStatement')
         self.tab_num += 1
         # Expect a While
