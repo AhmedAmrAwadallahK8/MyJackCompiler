@@ -34,6 +34,13 @@ class JackTokenizer:
         """
         return self.tack_code[self.index]
 
+    def get_ind(self):
+        """Getter
+
+        :return: (int) The current index value
+        """
+        return self.index
+
     def advance(self):
         """Increment index by 1 if index is within the lists length otherwise set index to be equal to -1
 
