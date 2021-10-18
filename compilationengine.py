@@ -45,11 +45,17 @@ class CompilationEngine:
         self.tab_num -= 1
         return out_xml
 
-    def xml_snippet_ll_1(self):
-        xml_code = '\t' * self.tab_num
-        xml_code += '<' + self.current_token.get_variety() + '> '
-        xml_code += self.current_token.get_val()
-        xml_code += ' </' + self.current_token.get_variety() + '>\n'
+    def xml_snippet_ll_1(self, exp_variety):
+        if self.current_token.get_variety() == exp_variety:
+            xml_code = '\t' * self.tab_num
+            xml_code += '<' + self.current_token.get_variety() + '> '
+            xml_code += self.current_token.get_val()
+            xml_code += ' </' + self.current_token.get_variety() + '>\n'
+        else:
+            xml_code = '\t' * self.tab_num
+            xml_code += '<' + self.current_token.get_variety() + '> '
+            xml_code += 'THIS VARIETY WAS NOT EXPECTED, THE VARIETY ' + exp_variety + ' WAS EXPECTED ' + self.current_token.get_val()
+            xml_code += ' </' + self.current_token.get_variety() + '>\n'
         self.next_token()
         return xml_code
 
@@ -61,19 +67,19 @@ class CompilationEngine:
         out_xml = self.start_rule('classVarDec')
         self.tab_num += 1
         # Expect Keyword = static or field
-        out_xml += self.xml_snippet_ll_1()
+        out_xml += self.xml_snippet_ll_1('keyword')
         # Expect a type
-        out_xml += self.xml_snippet_ll_1()
+        out_xml += self.xml_snippet_ll_1('keyword')
         # Expect a variable name
-        out_xml += self.xml_snippet_ll_1()
+        out_xml += self.xml_snippet_ll_1('identifier')
         # Expect ; or expect more variable names
         while self.current_token.get_val() != ';':
             # Expect a comma
-            out_xml += self.xml_snippet_ll_1()
+            out_xml += self.xml_snippet_ll_1('symbol')
             # Expect a variable name
-            out_xml += self.xml_snippet_ll_1()
+            out_xml += self.xml_snippet_ll_1('identifier')
         # Expect a ;
-        out_xml += self.xml_snippet_ll_1()
+        out_xml += self.xml_snippet_ll_1('symbol')
         self.tab_num -= 1
         out_xml += self.end_rule('classVarDec')
         return out_xml
@@ -86,19 +92,19 @@ class CompilationEngine:
         out_xml = self.start_rule('varDec')
         self.tab_num += 1
         # Expect Keyword = var
-        out_xml += self.xml_snippet_ll_1()
+        out_xml += self.xml_snippet_ll_1('keyword')
         # Expect a type
-        out_xml += self.xml_snippet_ll_1()
+        out_xml += self.xml_snippet_ll_1('keyword')
         # Expect a variable name
-        out_xml += self.xml_snippet_ll_1()
+        out_xml += self.xml_snippet_ll_1('identifier')
         # Expect ; or expect more variable names
         while self.current_token.get_val() != ';':
             # Expect a comma
-            out_xml += self.xml_snippet_ll_1()
+            out_xml += self.xml_snippet_ll_1('symbol')
             # Expect a variable name
-            out_xml += self.xml_snippet_ll_1()
+            out_xml += self.xml_snippet_ll_1('identifier')
         # Expect a ;
-        out_xml += self.xml_snippet_ll_1()
+        out_xml += self.xml_snippet_ll_1('symbol')
         self.tab_num -= 1
         out_xml += self.end_rule('varDec')
         return out_xml
@@ -117,19 +123,19 @@ class CompilationEngine:
         out_xml = self.start_rule('whileStatement')
         self.tab_num += 1
         # Expect a While
-        out_xml += self.xml_snippet_ll_1()
+        out_xml += self.xml_snippet_ll_1('keyword')
         # Expect a (
-        out_xml += self.xml_snippet_ll_1()
+        out_xml += self.xml_snippet_ll_1('symbol')
         # Expect a expression
         out_xml += self.compile_expression()
         # Expect a )
-        out_xml += self.xml_snippet_ll_1()
+        out_xml += self.xml_snippet_ll_1('symbol')
         # Expect a {
-        out_xml += self.xml_snippet_ll_1()
+        out_xml += self.xml_snippet_ll_1('symbol')
         # Expect statements
         out_xml += self.compile_statements()
         # Lastly expect a }
-        out_xml += self.xml_snippet_ll_1()
+        out_xml += self.xml_snippet_ll_1('symbol')
         self.tab_num -= 1
         out_xml += self.end_rule('whileStatement')
         return out_xml
