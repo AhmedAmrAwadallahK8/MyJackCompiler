@@ -46,6 +46,12 @@ class CompilationEngine:
         return out_xml
 
     def xml_snippet_ll_1(self, exp_variety):
+        """ Returns XML code pertaining to the current token, if the variety of the token is not expected this will
+        still return XML code but the code will state that the variety is incorrect in the same line
+
+        :param exp_variety: (String) the expected variety of token
+        :return: (String) XML representation
+        """
         if self.current_token.get_variety() == exp_variety:
             xml_code = '\t' * self.tab_num
             xml_code += '<' + self.current_token.get_variety() + '> '
@@ -53,9 +59,8 @@ class CompilationEngine:
             xml_code += ' </' + self.current_token.get_variety() + '>\n'
         else:
             xml_code = '\t' * self.tab_num
-            xml_code += '<' + self.current_token.get_variety() + '> '
-            xml_code += 'THIS VARIETY WAS NOT EXPECTED, THE VARIETY ' + exp_variety + ' WAS EXPECTED ' + self.current_token.get_val()
-            xml_code += ' </' + self.current_token.get_variety() + '>\n'
+            xml_code += 'FOUND VARIETY ' + self.current_token.get_variety() + ' AND VAL ' + self.current_token.get_val()
+            xml_code += ' THIS VARIETY WAS NOT EXPECTED, THE VARIETY ' + exp_variety + ' WAS EXPECTED\n'
         self.next_token()
         return xml_code
 
@@ -109,11 +114,14 @@ class CompilationEngine:
         out_xml += self.end_rule('varDec')
         return out_xml
 
+    def compile_term(self):
+        pass
+
     def compile_expression(self):
-        return "Incomplete method"
+        pass
 
     def compile_statements(self):
-        return "Incomplete method"
+        pass
 
     def compile_while_statement(self):
         """Responsible for parsing a while statement
@@ -139,6 +147,18 @@ class CompilationEngine:
         self.tab_num -= 1
         out_xml += self.end_rule('whileStatement')
         return out_xml
+
+    def compile_let_statement(self):
+        pass
+
+    def compile_do_statement(self):
+        pass
+
+    def compile_if_statement(self):
+        pass
+
+    def compile_return_statement(self):
+        pass
 
 
 
