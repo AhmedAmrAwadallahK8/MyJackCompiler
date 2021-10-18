@@ -19,6 +19,18 @@ class CompilationEngine:
         else:
             print('No more tokens left')
 
+    def start_rule(self, rule):
+        self.tab_num += 1
+        out_xml = '\t' * self.tab_num
+        out_xml += '<' + rule + '>\n'
+        return out_xml
+
+    def end_rule(self, rule):
+        out_xml = '\t' * self.tab_num
+        out_xml += '</' + rule + '>\n'
+        self.tab_num -= 1
+        return out_xml
+
     def xml_snippet_ll_1(self):
         xml_code = '\t' * self.tab_num
         xml_code += '<' + self.current_token.get_variety() + '> '
@@ -32,9 +44,7 @@ class CompilationEngine:
 
         :return: (String) XML representation
         """
-        self.tab_num += 1
-        out_xml = '\t'*self.tab_num
-        out_xml += '<classVarDec>\n'
+        out_xml = self.start_rule('classVarDec')
         self.tab_num += 1
         # Expect Keyword = static or field
         out_xml += self.xml_snippet_ll_1()
@@ -51,9 +61,7 @@ class CompilationEngine:
         # Expect a ;
         out_xml += self.xml_snippet_ll_1()
         self.tab_num -= 1
-        out_xml += '\t' * self.tab_num
-        out_xml += '</classVarDec>\n'
-        self.tab_num -= 1
+        out_xml += self.end_rule('classVarDec')
         return out_xml
 
     def compile_var_dec(self):
@@ -61,9 +69,7 @@ class CompilationEngine:
 
         :return: (String) XML representation
         """
-        self.tab_num += 1
-        out_xml = '\t' * self.tab_num
-        out_xml += '<varDec>\n'
+        out_xml = self.start_rule('varDec')
         self.tab_num += 1
         # Expect Keyword = var
         out_xml += self.xml_snippet_ll_1()
@@ -80,9 +86,7 @@ class CompilationEngine:
         # Expect a ;
         out_xml += self.xml_snippet_ll_1()
         self.tab_num -= 1
-        out_xml += '\t' * self.tab_num
-        out_xml += '</varDec>\n'
-        self.tab_num -= 1
+        out_xml += self.end_rule('varDec')
         return out_xml
 
     def compile_expression(self):
@@ -92,9 +96,7 @@ class CompilationEngine:
         return "Incomplete method"
 
     def compile_while_statement(self):
-        self.tab_num += 1
-        out_xml = '\t'*self.tab_num
-        out_xml += '<whileStatement>\n'
+        out_xml = self.start_rule('whileStatement')
         self.tab_num += 1
         # Expect a While
         out_xml += self.xml_snippet_ll_1()
@@ -111,8 +113,7 @@ class CompilationEngine:
         # Lastly expect a }
         out_xml += self.xml_snippet_ll_1()
         self.tab_num -= 1
-        out_xml += '\t'*self.tab_num
-        out_xml += '</compileWhile>\n'
+        out_xml += self.end_rule('whileStatement')
         return out_xml
 
 
@@ -125,8 +126,8 @@ class CompilationEngine:
 
 
 test_file_data1 = [('Data1.jack', ['class Square {', 'field int x, y;', 'constructor Square new(int Ax, int Ay, int Asize) {']), ('Data2.jack', ['field int x, y;'])]
-test_file_data2 = [('Data2.jack', ['var int x, y;'])]
+test_file_data2 = [('Data2.jack', ['field int x, y;'])]
 
 a = CompilationEngine(test_file_data2)
-print(a.compile_var_dec())
+print(a.compile_class_var_dec())
 
