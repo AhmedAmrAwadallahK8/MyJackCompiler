@@ -55,12 +55,46 @@ class CompilationEngine:
             self.tab_num -= 1
         out_xml += '\t' * self.tab_num
         out_xml += '</classVarDec>\n'
+        self.tab_num -= 1
+        return out_xml
+
+    def compile_var_dec(self):
+        self.tab_num += 1
+        out_xml = '\t' * self.tab_num
+        out_xml += '<varDec>\n'
+        if self.current_token.get_val() == 'var':
+            self.tab_num += 1
+            # Expect Keyword = var
+            out_xml += self.xml_snippet()
+            self.next_token()
+            # Expect a type
+            out_xml += self.xml_snippet()
+            self.next_token()
+            # Expect a variable name
+            out_xml += self.xml_snippet()
+            self.next_token()
+            # Expect ; or expect more variable names
+            while self.current_token.get_val() != ';':
+                # Expect a comma
+                out_xml += self.xml_snippet()
+                self.next_token()
+                # Expect a variable name
+                out_xml += self.xml_snippet()
+                self.next_token()
+            # Expect a ;
+            out_xml += self.xml_snippet()
+            self.next_token()
+            self.tab_num -= 1
+        out_xml += '\t' * self.tab_num
+        out_xml += '</varDec>\n'
+        self.tab_num -= 1
         return out_xml
 
 
+
 test_file_data1 = [('Data1.jack', ['class Square {', 'field int x, y;', 'constructor Square new(int Ax, int Ay, int Asize) {']), ('Data2.jack', ['field int x, y;'])]
-test_file_data2 = [('Data2.jack', ['field int x, y;'])]
+test_file_data2 = [('Data2.jack', ['var int x, y;'])]
 
 a = CompilationEngine(test_file_data2)
-print(a.compile_class_var_dec())
+print(a.compile_var_dec())
 
