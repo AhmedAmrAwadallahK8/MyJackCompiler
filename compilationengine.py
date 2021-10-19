@@ -132,7 +132,7 @@ class CompilationEngine:
             # Expect term
             out_xml += self.compile_term()
         out_xml += self.end_rule('expression')
-        pass
+        return out_xml
 
     def compile_statements(self):
         pass

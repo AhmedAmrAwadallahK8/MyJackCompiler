@@ -41,6 +41,13 @@ class JackTokenizer:
         """
         return self.index
 
+    def peek_next_token(self):
+        """Method for when parsing becomes LL[2] which occurs when handling expressions
+
+        :return: JackToken object that is ahead of the current JackToken
+        """
+        return self.tack_code[self.index+1]
+
     def advance(self):
         """Increment index by 1 if index is within the lists length otherwise set index to be equal to -1
 
