@@ -2,6 +2,7 @@ import jacktokenizer as jt
 
 
 class CompilationEngine:
+    ops = ['+', '-', '*', '/', '>', '<', '=', '|', '&']
     def __init__(self, file_data):
         self.tokenizers = []
         self.tokenizer_ind = 0
@@ -115,6 +116,7 @@ class CompilationEngine:
     def compile_term(self):
 
         out_xml = self.start_rule('term')
+
         out_xml += self.end_rule('term')
         pass
 
@@ -124,13 +126,11 @@ class CompilationEngine:
         # Expect term
         out_xml += self.compile_term()
         # Expect ; or repeating operation then term
-        while self.current_token.get_val() != ';' and self.current_token.get_val() != 'final token':
+        while self.current_token.get_val() in self.ops:
             # Expect Operation
             out_xml += self.xml_snippet_ll_1('symbol')
             # Expect term
             out_xml += self.compile_term()
-        # Expect ;
-        out_xml += self.xml_snippet_ll_1('symbol')
         out_xml += self.end_rule('expression')
         pass
 
