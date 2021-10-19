@@ -2,9 +2,11 @@ import jacktokenizer as jt
 
 
 class CompilationEngine:
-    ops = ['+', '-', '*', '/', '>', '<', '=', '|', '&']
-    unary_ops = ['-', '~']
-    keyword_constant = ['true', 'false', 'null', 'this']
+    ops = ('+', '-', '*', '/', '>', '<', '=', '|', '&')
+    unary_ops = ('-', '~')
+    keyword_constant = ('true', 'false', 'null', 'this')
+    jack_statements = ('let', 'do', 'while', 'if', 'return')
+
     def __init__(self, file_data):
         self.tokenizers = []
         self.tokenizer_ind = 0
@@ -175,7 +177,26 @@ class CompilationEngine:
         return out_xml
 
     def compile_statements(self):
-        pass
+        """Responsible for dealing with multiple statements and selecting the right parser for them
+
+        :return: (String) XML representation
+        """
+        out_xml = self.start_rule('statements')
+        # Keep looping if our current token value represents a jack statement
+        while self.current_token.get_val() in self.jack_statements:
+            # Find what type of statement then enter that statements method
+            if self.current_token.get_val() == 'let':
+                out_xml += self.compile_let_statement()
+            elif self.current_token.get_val() == 'if':
+                out_xml += self.compile_if_statement()
+            elif self.current_token.get_val() == 'while':
+                out_xml += self.compile_while_statement()
+            elif self.current_token.get_val() == 'do':
+                out_xml += self.compile_do_statement()
+            elif self.current_token.get_val() == 'return':
+                out_xml += self.compile_while_statement()
+        out_xml += self.end_rule('statements')
+        return out_xml
 
     def compile_while_statement(self):
         """Responsible for parsing a while statement
@@ -194,7 +215,7 @@ class CompilationEngine:
         # Expect a {
         out_xml += self.xml_snippet_ll_1('symbol')
         # Expect statements
-        #out_xml += self.compile_statements()
+        out_xml += self.compile_statements()
         # Lastly expect a }
         out_xml += self.xml_snippet_ll_1('symbol')
         out_xml += self.end_rule('whileStatement')
