@@ -252,7 +252,33 @@ class CompilationEngine:
         pass
 
     def compile_if_statement(self):
-        pass
+        out_xml = self.start_rule('ifStatement')
+        # Expect an if
+        out_xml += self.xml_snippet_ll_1('keyword')
+        # Expect a (
+        out_xml += self.xml_snippet_ll_1('symbol')
+        # Expect an expression
+        out_xml += self.compile_expression()
+        # Expect a )
+        out_xml += self.xml_snippet_ll_1('symbol')
+        # Expect a {
+        out_xml += self.xml_snippet_ll_1('symbol')
+        # Expect statements
+        out_xml += self.compile_statements()
+        # Expect a }
+        out_xml += self.xml_snippet_ll_1('symbol')
+        # If there is an else expect the following otherwise move on
+        if self.current_token.get_val() == 'else':
+            # Expect an else
+            out_xml += self.xml_snippet_ll_1('keyword')
+            # Expect a {
+            out_xml += self.xml_snippet_ll_1('symbol')
+            # Expect statements
+            out_xml += self.compile_statements()
+            # Expect a }
+            out_xml += self.xml_snippet_ll_1('symbol')
+        out_xml += self.end_rule('ifStatement')
+        return out_xml
 
     def compile_return_statement(self):
         """Responsible for parsing a return statement
@@ -282,10 +308,10 @@ class CompilationEngine:
 
 test_file_data1 = [('Data1.jack', ['class Square {', 'field int x, y;', 'constructor Square new(int Ax, int Ay, int Asize) {']), ('Data2.jack', ['field int x, y;'])]
 test_file_data2 = [('Data2.jack', ['field int x, y;'])]
-test_file_data3 = [('Data3.jack', ['while(count<100){let count = count + 1; return 2; }'])]
+test_file_data3 = [('Data3.jack', ['if(count<100){let count = count + 1; }else {let count = 2; }'])]
 
 a = CompilationEngine(test_file_data3)
 
 
-print(a.compile_while_statement())
+print(a.compile_if_statement())
 
