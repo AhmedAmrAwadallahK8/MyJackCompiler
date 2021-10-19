@@ -71,6 +71,41 @@ class CompilationEngine:
         self.next_token()
         return xml_code
 
+    def subroutine_call(self):
+        """Responsible for handing the terminal rule, subroutineCall
+
+        :return: (String) XML Representation
+        """
+        # Expect either subroutineName or a className/varName but this difference is actually reseolved in the next
+        # token so peek ahead and see. If the next token value is a ( then we expect subroutineName if it is a . we
+        # expect a className/varName
+        xml_out = ''
+        if self.current_tokenizer.peek_next_token().get_val() == '(':
+            # Expect subroutineName
+            xml_out += self.xml_snippet_ll_1('identifier')
+            # Expect (
+            xml_out += self.xml_snippet_ll_1('symbol')
+            # Expect expressionList only if the token is not currently a )
+            if self.current_token.get_val() != ')':
+                xml_out += self.compile_expression_list()
+            # Expect )
+            xml_out += self.xml_snippet_ll_1('symbol')
+        elif self.current_tokenizer.peek_next_token().get_val() == '.':
+            # Expect className/varName
+            xml_out += self.xml_snippet_ll_1('identifier')
+            # Expect a .
+            xml_out += self.xml_snippet_ll_1('symbol')
+            # Expect subroutineName
+            xml_out += self.xml_snippet_ll_1('identifier')
+            # Expect (
+            xml_out += self.xml_snippet_ll_1('symbol')
+            # Expect expressionList
+            if self.current_token.get_val() != ')':
+                xml_out += self.compile_expression_list()
+            # Expect )
+            xml_out += self.xml_snippet_ll_1('symbol')
+        return xml_out
+
     def compile_class_var_dec(self):
         """Responsible for parsing a class variable declaration
 
@@ -117,7 +152,7 @@ class CompilationEngine:
         out_xml += self.end_rule('varDec')
         return out_xml
 
-    def compile_term(self): # partially implemented. Havent addressed varNames
+    def compile_term(self):  # partially implemented. Havent addressed varNames
         """Responsible for parsing a term
 
         :return: (String) XML representation
@@ -130,9 +165,9 @@ class CompilationEngine:
             # Expect integer
             out_xml += self.xml_snippet_ll_1('integerConstant')
         # String encountered
-        elif self.current_token.get_variety() == 'stringConstant':
+        elif self.current_token.get_variety() == 'StringConstant':
             # Expect String
-            out_xml += self.xml_snippet_ll_1('stringConstant')
+            out_xml += self.xml_snippet_ll_1('StringConstant')
         # Keyword constant encountered
         elif self.current_token.get_val() in self.keyword_constant:
             # Expect keyword constant
@@ -175,6 +210,24 @@ class CompilationEngine:
             out_xml += self.compile_term()
         out_xml += self.end_rule('expression')
         return out_xml
+
+    def compile_expression_list(self):
+        """Responsible for parsing an expression list
+
+        :return: (String) XML representation
+        """
+
+        xml_out = self.start_rule('expressionList')
+        # Expect expression
+        xml_out += self.compile_expression()
+        # If next token is , expect more expressions
+        while self.current_token.get_val() == ',':
+            # Expect a ,
+            xml_out += self.xml_snippet_ll_1('symbol')
+            # Expect expression
+            xml_out += self.compile_expression()
+        xml_out += self.end_rule('expressionList')
+        return xml_out
 
     def compile_statements(self):
         """Responsible for dealing with multiple statements and selecting the right parser for them
@@ -249,9 +302,25 @@ class CompilationEngine:
         return out_xml
 
     def compile_do_statement(self):
-        pass
+        """Responsible for parsing a do statement
+
+        :return: (String) XML representation
+        """
+        xml_out = self.start_rule('doStatement')
+        # Expect do
+        xml_out += self.xml_snippet_ll_1('keyword')
+        # Expect subroutineCall
+        xml_out += self.subroutine_call()
+        # Expect a ;
+        xml_out += self.xml_snippet_ll_1('symbol')
+        xml_out += self.end_rule('doStatement')
+        return xml_out
 
     def compile_if_statement(self):
+        """Responsible for parsing an if statement
+
+        :return: (String) XML Representation
+        """
         out_xml = self.start_rule('ifStatement')
         # Expect an if
         out_xml += self.xml_snippet_ll_1('keyword')
@@ -308,10 +377,10 @@ class CompilationEngine:
 
 test_file_data1 = [('Data1.jack', ['class Square {', 'field int x, y;', 'constructor Square new(int Ax, int Ay, int Asize) {']), ('Data2.jack', ['field int x, y;'])]
 test_file_data2 = [('Data2.jack', ['field int x, y;'])]
-test_file_data3 = [('Data3.jack', ['if(count<100){let count = count + 1; }else {let count = 2; }'])]
+test_file_data3 = [('Data3.jack', ['do hello("test", 5+(3-2), 4*4, ~true); '])]
 
 a = CompilationEngine(test_file_data3)
 
 
-print(a.compile_if_statement())
+print(a.compile_do_statement())
 
