@@ -187,7 +187,7 @@ class CompilationEngine:
         out_xml += self.xml_snippet_ll_1('keyword')
         # Expect a (
         out_xml += self.xml_snippet_ll_1('symbol')
-        # Expect a expression
+        # Expect an expression
         out_xml += self.compile_expression()
         # Expect a )
         out_xml += self.xml_snippet_ll_1('symbol')
@@ -210,7 +210,21 @@ class CompilationEngine:
         pass
 
     def compile_return_statement(self):
-        pass
+        """Responsible for parsing a return statement
+
+        :return: (String) XML Representation
+        """
+        out_xml = self.start_rule('ReturnStatement')
+        # Expect a return
+        out_xml += self.xml_snippet_ll_1('keyword')
+        # Expect either an expression or ;
+        if self.current_token.get_val() != ';' and self.current_token.get_val() != 'final token':
+            # Expect an expression
+            out_xml += self.compile_expression()
+        # Expect a ;
+        out_xml += self.xml_snippet_ll_1('symbol')
+        out_xml += self.end_rule('ReturnStatement')
+        return out_xml
 
 
 
@@ -223,10 +237,10 @@ class CompilationEngine:
 
 test_file_data1 = [('Data1.jack', ['class Square {', 'field int x, y;', 'constructor Square new(int Ax, int Ay, int Asize) {']), ('Data2.jack', ['field int x, y;'])]
 test_file_data2 = [('Data2.jack', ['field int x, y;'])]
-test_file_data3 = [('Data3.jack', ['while ( ~(x-1) ) {}'])]
+test_file_data3 = [('Data3.jack', ['return (a+50);'])]
 
 a = CompilationEngine(test_file_data3)
 
 
-print(a.compile_while_statement())
+print(a.compile_return_statement())
 
