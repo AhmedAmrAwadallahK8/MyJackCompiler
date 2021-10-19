@@ -201,7 +201,31 @@ class CompilationEngine:
         return out_xml
 
     def compile_let_statement(self):
-        pass
+        """ Responsible for parsing a let statement
+
+        :return: (String) XML Representation
+        """
+        out_xml = self.start_rule('letStatement')
+        # Expect let
+        out_xml += self.xml_snippet_ll_1('keyword')
+        # Expect varName
+        out_xml += self.xml_snippet_ll_1('identifier')
+        # Expect either a [ or =
+        if self.current_token.get_val() == '[':
+            # Expect a [
+            out_xml += self.xml_snippet_ll_1('symbol')
+            # Expect an expression
+            out_xml += self.compile_expression()
+            # Expect a ]
+            out_xml += self.xml_snippet_ll_1('symbol')
+        # Expect a =
+        out_xml += self.xml_snippet_ll_1('symbol')
+        # Expect an expression
+        out_xml += self.compile_expression()
+        # Expect a ;
+        out_xml += self.xml_snippet_ll_1('symbol')
+        out_xml += self.end_rule('letStatement')
+        return out_xml
 
     def compile_do_statement(self):
         pass
@@ -237,10 +261,10 @@ class CompilationEngine:
 
 test_file_data1 = [('Data1.jack', ['class Square {', 'field int x, y;', 'constructor Square new(int Ax, int Ay, int Asize) {']), ('Data2.jack', ['field int x, y;'])]
 test_file_data2 = [('Data2.jack', ['field int x, y;'])]
-test_file_data3 = [('Data3.jack', ['return (a+50);'])]
+test_file_data3 = [('Data3.jack', ['let a[3] = b; '])]
 
 a = CompilationEngine(test_file_data3)
 
 
-print(a.compile_return_statement())
+print(a.compile_let_statement())
 
