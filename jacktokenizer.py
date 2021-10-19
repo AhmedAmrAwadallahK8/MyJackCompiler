@@ -46,7 +46,7 @@ class JackTokenizer:
 
         :return: None
         """
-        if self.index < len(self.tack_code) - 1:
+        if self.index < len(self.tack_code) - 2 and self.index > -1:
             self.index += 1
         else:
             self.index = -1
@@ -110,13 +110,14 @@ class JackTokenizer:
                 elif tok in self.keyword:  # Condition indicates a Keyword Token is present
                     self.tack_code.append(t.JackToken('keyword', tok))
                     o_i = i
-                elif next_char in self.symbol or next_char == ' ':  # Condition indicates a Identifier token is present
+                elif next_char in self.symbol or next_char == ' ' or i == len(line):  # Condition indicates a Identifier token is present
                     self.tack_code.append(t.JackToken('identifier', tok))
                     o_i = i
                 i += 1
+        self.tack_code.append(t.JackToken('FINAL TOKEN', 'END TOKEN'))
 
 
-'''test_list1 = ['field int x, y;']
+test_list1 = ['field int x, y']
 
 
 test_list2 = ['class Square {', 'field int x, y;', 'constructor Square new(int Ax, int Ay, int Asize) {', 'let x = Ax;',
@@ -125,12 +126,11 @@ test_list2 = ['class Square {', 'field int x, y;', 'constructor Square new(int A
 test_symbol = [',']
 
 
-tokenize = JackTokenizer(test_list2)
-tokenize.make_tokens()
+tokenize = JackTokenizer('test.jack', test_list1)
 token_list = tokenize.get_tack_code()
-print(token_list)
+#print(token_list)
 for token in token_list:
-    print(token.get_data())'''
+    print(token.get_data())
 
 
 
