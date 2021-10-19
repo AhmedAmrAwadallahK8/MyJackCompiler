@@ -34,7 +34,7 @@ class CompilationEngine:
         :param rule: (String) Rule we are parsing
         :return: (String) XML Representation
         """
-        self.tab_num += 1
+        #self.tab_num += 1
         out_xml = '\t' * self.tab_num
         out_xml += '<' + rule + '>\n'
         self.tab_num += 1
@@ -49,7 +49,7 @@ class CompilationEngine:
         self.tab_num -= 1
         out_xml = '\t' * self.tab_num
         out_xml += '</' + rule + '>\n'
-        self.tab_num -= 1
+        #self.tab_num -= 1
         return out_xml
 
     def xml_snippet_ll_1(self, exp_variety):
@@ -194,7 +194,7 @@ class CompilationEngine:
             elif self.current_token.get_val() == 'do':
                 out_xml += self.compile_do_statement()
             elif self.current_token.get_val() == 'return':
-                out_xml += self.compile_while_statement()
+                out_xml += self.compile_return_statement()
         out_xml += self.end_rule('statements')
         return out_xml
 
@@ -282,10 +282,10 @@ class CompilationEngine:
 
 test_file_data1 = [('Data1.jack', ['class Square {', 'field int x, y;', 'constructor Square new(int Ax, int Ay, int Asize) {']), ('Data2.jack', ['field int x, y;'])]
 test_file_data2 = [('Data2.jack', ['field int x, y;'])]
-test_file_data3 = [('Data3.jack', ['let a[3] = b; '])]
+test_file_data3 = [('Data3.jack', ['while(count<100){let count = count + 1; return 2; }'])]
 
 a = CompilationEngine(test_file_data3)
 
 
-print(a.compile_let_statement())
+print(a.compile_while_statement())
 
