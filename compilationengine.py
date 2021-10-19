@@ -3,6 +3,8 @@ import jacktokenizer as jt
 
 class CompilationEngine:
     ops = ['+', '-', '*', '/', '>', '<', '=', '|', '&']
+    unary_ops = ['-', '~']
+    keyword_constant = ['true', 'false', 'null', 'this']
     def __init__(self, file_data):
         self.tokenizers = []
         self.tokenizer_ind = 0
@@ -113,14 +115,52 @@ class CompilationEngine:
         out_xml += self.end_rule('varDec')
         return out_xml
 
-    def compile_term(self):
+    def compile_term(self): # partially implemented. Havent addressed varNames
+        """Responsible for parsing a term
+
+        :return: (String) XML representation
+        """
 
         out_xml = self.start_rule('term')
-
+        # We expect a term to be here but there are a variety of terms that could occur
+        # Integer encountered
+        if self.current_token.get_variety() == 'integerConstant':
+            # Expect integer
+            out_xml += self.xml_snippet_ll_1('integerConstant')
+        # String encountered
+        elif self.current_token.get_variety() == 'stringConstant':
+            # Expect String
+            out_xml += self.xml_snippet_ll_1('stringConstant')
+        # Keyword constant encountered
+        elif self.current_token.get_val() in self.keyword_constant:
+            # Expect keyword constant
+            out_xml += self.xml_snippet_ll_1('keyword')
+        # Unary op term encountered
+        elif self.current_token.get_val() in self.unary_ops:
+            # Expect a unary op
+            out_xml += self.xml_snippet_ll_1('symbol')
+            # Expect a term
+            out_xml += self.compile_term()
+        # ( encountered
+        elif self.current_token.get_val() == '(':
+            # Expect (
+            out_xml += self.xml_snippet_ll_1('symbol')
+            # Expect expression
+            out_xml += self.compile_expression()
+            # Expect )
+            out_xml += self.xml_snippet_ll_1('symbol')
+        elif self.current_token.get_variety() == 'identifier':
+            # Expect a variable name
+            out_xml += self.xml_snippet_ll_1('identifier')
+        # Still need more if statements for varnames LL2 scenarios but do later
         out_xml += self.end_rule('term')
-        pass
+        return out_xml
 
     def compile_expression(self):
+        """ Responsible for parsing an expression
+
+        :return: (String) XML representation
+        """
 
         out_xml = self.start_rule('expression')
         # Expect term
@@ -183,9 +223,10 @@ class CompilationEngine:
 
 test_file_data1 = [('Data1.jack', ['class Square {', 'field int x, y;', 'constructor Square new(int Ax, int Ay, int Asize) {']), ('Data2.jack', ['field int x, y;'])]
 test_file_data2 = [('Data2.jack', ['field int x, y;'])]
+test_file_data3 = [('Data3.jack', ['while ( ~(x-1) ) {}'])]
 
-a = CompilationEngine(test_file_data2)
+a = CompilationEngine(test_file_data3)
 
 
-print(a.compile_class_var_dec())
+print(a.compile_while_statement())
 
