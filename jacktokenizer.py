@@ -46,7 +46,7 @@ class JackTokenizer:
 
         :return: None
         """
-        if self.index < len(self.tack_code) - 2 and self.index > -1:
+        if self.index < len(self.tack_code) - 1 and self.index > -1:
             self.index += 1
         else:
             self.index = -1
@@ -114,10 +114,10 @@ class JackTokenizer:
                     self.tack_code.append(t.JackToken('identifier', tok))
                     o_i = i
                 i += 1
-        self.tack_code.append(t.JackToken('FINAL TOKEN', 'END TOKEN'))
+        self.tack_code.append(t.JackToken('end', 'final token'))
 
 
-test_list1 = ['field int x, y']
+'''test_list1 = ['field int x, y']
 
 
 test_list2 = ['class Square {', 'field int x, y;', 'constructor Square new(int Ax, int Ay, int Asize) {', 'let x = Ax;',
@@ -130,7 +130,7 @@ tokenize = JackTokenizer('test.jack', test_list1)
 token_list = tokenize.get_tack_code()
 #print(token_list)
 for token in token_list:
-    print(token.get_data())
+    print(token.get_data())'''
 
 
 

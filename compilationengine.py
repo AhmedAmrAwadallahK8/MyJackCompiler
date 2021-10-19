@@ -79,18 +79,11 @@ class CompilationEngine:
         # Expect a variable name
         out_xml += self.xml_snippet_ll_1('identifier')
         # Expect ; or expect , and then a variable name repeating until ; is met
-        print(self.current_token.get_val())
-        while self.current_token.get_val() != ';' and self.current_tokenizer.get_ind() != -1:
-            print('looping')
-            print(self.current_token.get_val())
+        while self.current_token.get_val() != ';' and self.current_token.get_val() != 'final token':
             # Expect a comma
             out_xml += self.xml_snippet_ll_1('symbol')
-            print(self.current_token.get_val())
             # Expect a variable name
             out_xml += self.xml_snippet_ll_1('identifier')
-            print(self.current_token.get_val())
-        print('left loop')
-        print(self.current_token.get_val())
         # Expect a ;
         out_xml += self.xml_snippet_ll_1('symbol')
         out_xml += self.end_rule('classVarDec')
@@ -109,7 +102,7 @@ class CompilationEngine:
         # Expect a variable name
         out_xml += self.xml_snippet_ll_1('identifier')
         # Expect ; or expect more variable names
-        while self.current_token.get_val() != ';':
+        while self.current_token.get_val() != ';' and self.current_token.get_val() != 'final token':
             # Expect a comma
             out_xml += self.xml_snippet_ll_1('symbol')
             # Expect a variable name
@@ -131,7 +124,7 @@ class CompilationEngine:
         # Expect term
         out_xml += self.compile_term()
         # Expect ; or repeating operation then term
-        while self.current_token.get_val() != ';':
+        while self.current_token.get_val() != ';' and self.current_token.get_val() != 'final token':
             # Expect Operation
             out_xml += self.xml_snippet_ll_1('symbol')
             # Expect term
@@ -189,24 +182,10 @@ class CompilationEngine:
 
 
 test_file_data1 = [('Data1.jack', ['class Square {', 'field int x, y;', 'constructor Square new(int Ax, int Ay, int Asize) {']), ('Data2.jack', ['field int x, y;'])]
-test_file_data2 = [('Data2.jack', ['field int x, y'])]
+test_file_data2 = [('Data2.jack', ['field int x, y;'])]
 
 a = CompilationEngine(test_file_data2)
-print(a.current_token.get_val())
-a.next_token()
-print(a.current_token.get_val())
-a.next_token()
-print(a.current_token.get_val())
-a.next_token()
-print(a.current_token.get_val())
-a.next_token()
-print(a.current_token.get_val())
-a.next_token()
-print(a.current_token.get_val())
-a.next_token()
-print(a.current_token.get_val())
-a.next_token()
-print(a.current_token.get_val())
 
-#print(a.compile_class_var_dec())
+
+print(a.compile_class_var_dec())
 
