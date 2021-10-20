@@ -1,4 +1,5 @@
 import jacktokenizer as jt
+import filemediator as fm
 
 
 class CompilationEngine:
@@ -7,7 +8,8 @@ class CompilationEngine:
     keyword_constant = ('true', 'false', 'null', 'this')
     jack_statements = ('let', 'do', 'while', 'if', 'return')
 
-    def __init__(self, file_data):
+    def __init__(self, file_data, folder_name=''):
+        self.folder_name = folder_name
         self.tokenizers = []
         self.tokenizer_ind = 0
         self.tab_num = 0
@@ -471,8 +473,15 @@ class CompilationEngine:
         return out_xml
 
     def start_compilation_engine(self):
+        """ Responsible for directing files to be compiled. Once compilation is complete the data is loaded into a file
+            named after their respective jack file.
+
+        :return: None
+        """
         for tokenizer in self.tokenizers:
             self.current_tokenizer = tokenizer
+            xml_code = self.compile_class()
+            fm.load_file(self.current_tokenizer.get_file_name(), '.xml', xml_code, self.folder_name)
 
 
 
@@ -484,12 +493,12 @@ class CompilationEngine:
 
 
 
-test_file_data1 = [('Data1.jack', ['class Square {', 'field int x, y;', 'constructor Square new(int Ax, int Ay, int Asize) {']), ('Data2.jack', ['field int x, y;'])]
+'''test_file_data1 = [('Data1.jack', ['class Square {', 'field int x, y;', 'constructor Square new(int Ax, int Ay, int Asize) {']), ('Data2.jack', ['field int x, y;'])]
 test_file_data2 = [('Data2.jack', ['field int x, y;'])]
-test_file_data3 = [('Data3.jack', ['class Square{field int x; method void draw(int x, int y){var int z, a; var boolean b; let z = x + y; return z; } method void kill(){do draw(1,2); return;}}'])]
+test_file_data3 = [('Data3', ['class Square{field int x; method void draw(int x, int y){var int z, a; var boolean b; let z = x + y; return z; } method void kill(){do draw(1,2); return;}}'])]
 
-a = CompilationEngine(test_file_data3)
+a = CompilationEngine(test_file_data3, 'ExpressionLessSquare')
 
 
-print(a.compile_class())
+a.start_compilation_engine()'''
 

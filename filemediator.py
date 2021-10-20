@@ -54,6 +54,3 @@ def load_file(file_name, file_type, data, folder_name=''):
         os.chdir(origin_path)
 
 
-load_file('cheese', '.txt', 'I\t\t\tlove\n\t\tcheese', 'ExpressionLessSquare')
-
-
