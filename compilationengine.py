@@ -76,7 +76,7 @@ class CompilationEngine:
 
         :return: (String) XML Representation
         """
-        # Expect either subroutineName or a className/varName but this difference is actually reseolved in the next
+        # Expect either subroutineName or a className/varName but this difference is actually resolved in the next
         # token so peek ahead and see. If the next token value is a ( then we expect subroutineName if it is a . we
         # expect a className/varName
         xml_out = ''
@@ -408,9 +408,9 @@ class CompilationEngine:
         :return: (String) XML Representation
         """
         out_xml = self.start_rule('subroutineBody')
-        #Expect a {
+        # Expect a {
         out_xml += self.xml_snippet('symbol')
-        # Expect variable decleration if current token represents var
+        # Expect variable declaration if current token represents var
         while self.current_token.get_val() == 'var':
             out_xml += self.compile_var_dec()
         # Expect statements
