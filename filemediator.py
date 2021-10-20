@@ -28,5 +28,32 @@ def extract_folder(folder_name):
     return {"path": folder_path, "files": file_list}
 
 
+def load_file(file_name, file_type, data, folder_name=''):
+    """ Creates a new file that contains the input data. File extension needs to be specified. If the transformed file
+        came from a directory it will be return to the specified directory. The directory has to be in the current
+        working directory.
+
+    :param file_name: (String) Name of the file
+    :param file_type: (String) File extension
+    :param data: (String) Data to be put into the file
+    :param folder_name: (String) Name of the directory in the current working directory.
+    :return:
+    """
+    origin_path = ''
+    folder_path = ''
+    if folder_name != '':
+        origin_path = os.getcwd()
+        folder_path = origin_path + '/' + folder_name
+        os.chdir(folder_path)
+
+    file = file_name + file_type
+    with open(file, 'w') as f:
+        f.write(data)
+
+    if folder_name != '':
+        os.chdir(origin_path)
+
+
+load_file('cheese', '.txt', 'I\t\t\tlove\n\t\tcheese', 'ExpressionLessSquare')
 
 

@@ -470,6 +470,11 @@ class CompilationEngine:
         out_xml += self.end_rule('class')
         return out_xml
 
+    def start_compilation_engine(self):
+        for tokenizer in self.tokenizers:
+            self.current_tokenizer = tokenizer
+
+
 
 
 
