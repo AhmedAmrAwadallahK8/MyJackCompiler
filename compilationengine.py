@@ -52,7 +52,7 @@ class CompilationEngine:
         #self.tab_num -= 1
         return out_xml
 
-    def xml_snippet_ll_1(self, exp_variety):
+    def xml_snippet(self, exp_variety):
         """ Returns XML code pertaining to the current token, if the variety of the token is not expected this will
         still return XML code but the code will state that the variety is incorrect in the same line
 
@@ -82,28 +82,28 @@ class CompilationEngine:
         xml_out = ''
         if self.current_tokenizer.peek_next_token().get_val() == '(':
             # Expect subroutineName
-            xml_out += self.xml_snippet_ll_1('identifier')
+            xml_out += self.xml_snippet('identifier')
             # Expect (
-            xml_out += self.xml_snippet_ll_1('symbol')
+            xml_out += self.xml_snippet('symbol')
             # Expect expressionList only if the token is not currently a )
             if self.current_token.get_val() != ')':
                 xml_out += self.compile_expression_list()
             # Expect )
-            xml_out += self.xml_snippet_ll_1('symbol')
+            xml_out += self.xml_snippet('symbol')
         elif self.current_tokenizer.peek_next_token().get_val() == '.':
             # Expect className/varName
-            xml_out += self.xml_snippet_ll_1('identifier')
+            xml_out += self.xml_snippet('identifier')
             # Expect a .
-            xml_out += self.xml_snippet_ll_1('symbol')
+            xml_out += self.xml_snippet('symbol')
             # Expect subroutineName
-            xml_out += self.xml_snippet_ll_1('identifier')
+            xml_out += self.xml_snippet('identifier')
             # Expect (
-            xml_out += self.xml_snippet_ll_1('symbol')
+            xml_out += self.xml_snippet('symbol')
             # Expect expressionList
             if self.current_token.get_val() != ')':
                 xml_out += self.compile_expression_list()
             # Expect )
-            xml_out += self.xml_snippet_ll_1('symbol')
+            xml_out += self.xml_snippet('symbol')
         return xml_out
 
     def compile_class_var_dec(self):
@@ -113,19 +113,19 @@ class CompilationEngine:
         """
         out_xml = self.start_rule('classVarDec')
         # Expect Keyword = static or field
-        out_xml += self.xml_snippet_ll_1('keyword')
+        out_xml += self.xml_snippet('keyword')
         # Expect a type
-        out_xml += self.xml_snippet_ll_1('keyword')
+        out_xml += self.xml_snippet('keyword')
         # Expect a variable name
-        out_xml += self.xml_snippet_ll_1('identifier')
+        out_xml += self.xml_snippet('identifier')
         # Expect ; or expect , and then a variable name repeating until ; is met
         while self.current_token.get_val() != ';' and self.current_token.get_val() != 'final token':
             # Expect a comma
-            out_xml += self.xml_snippet_ll_1('symbol')
+            out_xml += self.xml_snippet('symbol')
             # Expect a variable name
-            out_xml += self.xml_snippet_ll_1('identifier')
+            out_xml += self.xml_snippet('identifier')
         # Expect a ;
-        out_xml += self.xml_snippet_ll_1('symbol')
+        out_xml += self.xml_snippet('symbol')
         out_xml += self.end_rule('classVarDec')
         return out_xml
 
@@ -136,19 +136,19 @@ class CompilationEngine:
         """
         out_xml = self.start_rule('varDec')
         # Expect Keyword = var
-        out_xml += self.xml_snippet_ll_1('keyword')
+        out_xml += self.xml_snippet('keyword')
         # Expect a type
-        out_xml += self.xml_snippet_ll_1('keyword')
+        out_xml += self.xml_snippet('keyword')
         # Expect a variable name
-        out_xml += self.xml_snippet_ll_1('identifier')
+        out_xml += self.xml_snippet('identifier')
         # Expect ; or expect more variable names
         while self.current_token.get_val() != ';' and self.current_token.get_val() != 'final token':
             # Expect a comma
-            out_xml += self.xml_snippet_ll_1('symbol')
+            out_xml += self.xml_snippet('symbol')
             # Expect a variable name
-            out_xml += self.xml_snippet_ll_1('identifier')
+            out_xml += self.xml_snippet('identifier')
         # Expect a ;
-        out_xml += self.xml_snippet_ll_1('symbol')
+        out_xml += self.xml_snippet('symbol')
         out_xml += self.end_rule('varDec')
         return out_xml
 
@@ -163,48 +163,48 @@ class CompilationEngine:
         # Integer encountered
         if self.current_token.get_variety() == 'integerConstant':
             # Expect integer
-            out_xml += self.xml_snippet_ll_1('integerConstant')
+            out_xml += self.xml_snippet('integerConstant')
         # String encountered
         elif self.current_token.get_variety() == 'StringConstant':
             # Expect String
-            out_xml += self.xml_snippet_ll_1('StringConstant')
+            out_xml += self.xml_snippet('StringConstant')
         # Keyword constant encountered
         elif self.current_token.get_val() in self.keyword_constant:
             # Expect keyword constant
-            out_xml += self.xml_snippet_ll_1('keyword')
+            out_xml += self.xml_snippet('keyword')
         # Unary op term encountered
         elif self.current_token.get_val() in self.unary_ops:
             # Expect a unary op
-            out_xml += self.xml_snippet_ll_1('symbol')
+            out_xml += self.xml_snippet('symbol')
             # Expect a term
             out_xml += self.compile_term()
         # ( encountered
         elif self.current_token.get_val() == '(':
             # Expect (
-            out_xml += self.xml_snippet_ll_1('symbol')
+            out_xml += self.xml_snippet('symbol')
             # Expect expression
             out_xml += self.compile_expression()
             # Expect )
-            out_xml += self.xml_snippet_ll_1('symbol')
+            out_xml += self.xml_snippet('symbol')
         elif self.current_token.get_variety() == 'identifier':
             # If we have an identifier type token then there are three possibilites
             # Need to look ahead 1 token to decipher what to do with the current token (LL2)
             if self.current_tokenizer.peek_next_token().get_val() == '[':  # Arraylike variable
                 # Expect variable name
-                out_xml += self.xml_snippet_ll_1('identifier')
+                out_xml += self.xml_snippet('identifier')
                 # Expect [
-                out_xml += self.xml_snippet_ll_1('symbol')
+                out_xml += self.xml_snippet('symbol')
                 # Expect expression
                 out_xml += self.compile_expression()
                 # Expect ]
-                out_xml += self.xml_snippet_ll_1('symbol')
+                out_xml += self.xml_snippet('symbol')
             elif (self.current_tokenizer.peek_next_token().get_val() == '(' or
                   self.current_tokenizer.peek_next_token().get_val() == '.'):  # SubroutineCall
                 # Expect subroutine call
                 out_xml += self.subroutine_call()
             else:  # variable
                 # Expect variable name
-                out_xml += self.xml_snippet_ll_1('identifier')
+                out_xml += self.xml_snippet('identifier')
         out_xml += self.end_rule('term')
         return out_xml
 
@@ -220,7 +220,7 @@ class CompilationEngine:
         # Expect ; or repeating operation then term
         while self.current_token.get_val() in self.ops:
             # Expect Operation
-            out_xml += self.xml_snippet_ll_1('symbol')
+            out_xml += self.xml_snippet('symbol')
             # Expect term
             out_xml += self.compile_term()
         out_xml += self.end_rule('expression')
@@ -238,7 +238,7 @@ class CompilationEngine:
         # If next token is , expect more expressions
         while self.current_token.get_val() == ',':
             # Expect a ,
-            xml_out += self.xml_snippet_ll_1('symbol')
+            xml_out += self.xml_snippet('symbol')
             # Expect expression
             xml_out += self.compile_expression()
         xml_out += self.end_rule('expressionList')
@@ -273,19 +273,19 @@ class CompilationEngine:
         """
         out_xml = self.start_rule('whileStatement')
         # Expect a While
-        out_xml += self.xml_snippet_ll_1('keyword')
+        out_xml += self.xml_snippet('keyword')
         # Expect a (
-        out_xml += self.xml_snippet_ll_1('symbol')
+        out_xml += self.xml_snippet('symbol')
         # Expect an expression
         out_xml += self.compile_expression()
         # Expect a )
-        out_xml += self.xml_snippet_ll_1('symbol')
+        out_xml += self.xml_snippet('symbol')
         # Expect a {
-        out_xml += self.xml_snippet_ll_1('symbol')
+        out_xml += self.xml_snippet('symbol')
         # Expect statements
         out_xml += self.compile_statements()
         # Lastly expect a }
-        out_xml += self.xml_snippet_ll_1('symbol')
+        out_xml += self.xml_snippet('symbol')
         out_xml += self.end_rule('whileStatement')
         return out_xml
 
@@ -296,23 +296,23 @@ class CompilationEngine:
         """
         out_xml = self.start_rule('letStatement')
         # Expect let
-        out_xml += self.xml_snippet_ll_1('keyword')
+        out_xml += self.xml_snippet('keyword')
         # Expect varName
-        out_xml += self.xml_snippet_ll_1('identifier')
+        out_xml += self.xml_snippet('identifier')
         # Expect either a [ or =
         if self.current_token.get_val() == '[':
             # Expect a [
-            out_xml += self.xml_snippet_ll_1('symbol')
+            out_xml += self.xml_snippet('symbol')
             # Expect an expression
             out_xml += self.compile_expression()
             # Expect a ]
-            out_xml += self.xml_snippet_ll_1('symbol')
+            out_xml += self.xml_snippet('symbol')
         # Expect a =
-        out_xml += self.xml_snippet_ll_1('symbol')
+        out_xml += self.xml_snippet('symbol')
         # Expect an expression
         out_xml += self.compile_expression()
         # Expect a ;
-        out_xml += self.xml_snippet_ll_1('symbol')
+        out_xml += self.xml_snippet('symbol')
         out_xml += self.end_rule('letStatement')
         return out_xml
 
@@ -323,11 +323,11 @@ class CompilationEngine:
         """
         xml_out = self.start_rule('doStatement')
         # Expect do
-        xml_out += self.xml_snippet_ll_1('keyword')
+        xml_out += self.xml_snippet('keyword')
         # Expect subroutineCall
         xml_out += self.subroutine_call()
         # Expect a ;
-        xml_out += self.xml_snippet_ll_1('symbol')
+        xml_out += self.xml_snippet('symbol')
         xml_out += self.end_rule('doStatement')
         return xml_out
 
@@ -338,29 +338,29 @@ class CompilationEngine:
         """
         out_xml = self.start_rule('ifStatement')
         # Expect an if
-        out_xml += self.xml_snippet_ll_1('keyword')
+        out_xml += self.xml_snippet('keyword')
         # Expect a (
-        out_xml += self.xml_snippet_ll_1('symbol')
+        out_xml += self.xml_snippet('symbol')
         # Expect an expression
         out_xml += self.compile_expression()
         # Expect a )
-        out_xml += self.xml_snippet_ll_1('symbol')
+        out_xml += self.xml_snippet('symbol')
         # Expect a {
-        out_xml += self.xml_snippet_ll_1('symbol')
+        out_xml += self.xml_snippet('symbol')
         # Expect statements
         out_xml += self.compile_statements()
         # Expect a }
-        out_xml += self.xml_snippet_ll_1('symbol')
+        out_xml += self.xml_snippet('symbol')
         # If there is an else expect the following otherwise move on
         if self.current_token.get_val() == 'else':
             # Expect an else
-            out_xml += self.xml_snippet_ll_1('keyword')
+            out_xml += self.xml_snippet('keyword')
             # Expect a {
-            out_xml += self.xml_snippet_ll_1('symbol')
+            out_xml += self.xml_snippet('symbol')
             # Expect statements
             out_xml += self.compile_statements()
             # Expect a }
-            out_xml += self.xml_snippet_ll_1('symbol')
+            out_xml += self.xml_snippet('symbol')
         out_xml += self.end_rule('ifStatement')
         return out_xml
 
@@ -371,13 +371,13 @@ class CompilationEngine:
         """
         out_xml = self.start_rule('ReturnStatement')
         # Expect a return
-        out_xml += self.xml_snippet_ll_1('keyword')
+        out_xml += self.xml_snippet('keyword')
         # Expect either an expression or ;
         if self.current_token.get_val() != ';' and self.current_token.get_val() != 'final token':
             # Expect an expression
             out_xml += self.compile_expression()
         # Expect a ;
-        out_xml += self.xml_snippet_ll_1('symbol')
+        out_xml += self.xml_snippet('symbol')
         out_xml += self.end_rule('ReturnStatement')
         return out_xml
 
@@ -388,17 +388,17 @@ class CompilationEngine:
         """
         out_xml = self.start_rule('parameterList')
         # Expect type
-        out_xml += self.xml_snippet_ll_1('keyword')  # Could be an indentifier
+        out_xml += self.xml_snippet('keyword')  # Could be an indentifier
         # Expect variable name
-        out_xml += self.xml_snippet_ll_1('identifier')
+        out_xml += self.xml_snippet('identifier')
         # If a comma is encountered then repeat the following
         while self.current_token.get_val() == ',':
             # Expect a ,
-            out_xml += self.xml_snippet_ll_1('symbol')
+            out_xml += self.xml_snippet('symbol')
             # Expect type
-            out_xml += self.xml_snippet_ll_1('keyword')  # Could be an indentifier
+            out_xml += self.xml_snippet('keyword')  # Could be an indentifier
             # Expect variable name
-            out_xml += self.xml_snippet_ll_1('identifier')
+            out_xml += self.xml_snippet('identifier')
         out_xml += self.end_rule('parameterList')
         return out_xml
 
@@ -409,14 +409,14 @@ class CompilationEngine:
         """
         out_xml = self.start_rule('subroutineBody')
         #Expect a {
-        out_xml += self.xml_snippet_ll_1('symbol')
+        out_xml += self.xml_snippet('symbol')
         # Expect variable decleration if current token represents var
         while self.current_token.get_val() == 'var':
             out_xml += self.compile_var_dec()
         # Expect statements
         out_xml += self.compile_statements()
         # Expect }
-        out_xml += self.xml_snippet_ll_1('symbol')
+        out_xml += self.xml_snippet('symbol')
         out_xml += self.end_rule('subroutineBody')
         return out_xml
 
@@ -427,18 +427,18 @@ class CompilationEngine:
         """
         out_xml = self.start_rule('subroutineDec')
         # Expect constructor, function, or method
-        out_xml += self.xml_snippet_ll_1('keyword')
+        out_xml += self.xml_snippet('keyword')
         # Expect void or type
-        out_xml += self.xml_snippet_ll_1('keyword')  # Technically this can also expect an identifier
+        out_xml += self.xml_snippet('keyword')  # Technically this can also expect an identifier
         # Expect subroutine name
-        out_xml += self.xml_snippet_ll_1('identifier')
+        out_xml += self.xml_snippet('identifier')
         # Expect a (
-        out_xml += self.xml_snippet_ll_1('symbol')
+        out_xml += self.xml_snippet('symbol')
         # Expect a parameter list if the current token is not a )
         if self.current_token.get_val() != ')' and self.current_token.get_val() != 'final token':
             out_xml += self.compile_parameter_list()
         # Expect a )
-        out_xml += self.xml_snippet_ll_1('symbol')
+        out_xml += self.xml_snippet('symbol')
         # Expect subroutine body
         out_xml += self.compile_subroutine_body()
 
@@ -452,13 +452,13 @@ class CompilationEngine:
         """
         out_xml = self.start_rule('class')
         # Expect class
-        out_xml += self.xml_snippet_ll_1('keyword')
+        out_xml += self.xml_snippet('keyword')
         # Expect class name
-        out_xml += self.xml_snippet_ll_1('identifier')
+        out_xml += self.xml_snippet('identifier')
         # Expect {
-        out_xml += self.xml_snippet_ll_1('symbol')
+        out_xml += self.xml_snippet('symbol')
         # Possibly expect class variable declarations
-        while self.current_token.get_val() in ('static','field'):
+        while self.current_token.get_val() in ('static', 'field'):
             # Expect a class variable declaration
             out_xml += self.compile_class_var_dec()
         # Possibly expect subroutine declarations
@@ -466,7 +466,7 @@ class CompilationEngine:
             # Expect a subroutine declaration
             out_xml += self.compile_subroutine_dec()
         # Expect }
-        out_xml += self.xml_snippet_ll_1('symbol')
+        out_xml += self.xml_snippet('symbol')
         out_xml += self.end_rule('class')
         return out_xml
 
