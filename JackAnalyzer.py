@@ -1,6 +1,7 @@
 import sys
 import os
 import filemediator as fm
+import compilationengine as ce
 
 
 def folder_test(file_name):
@@ -27,6 +28,10 @@ def jack_test(file_name):
         return True
 
 
+def remove_extension(file):
+    return file[:file.find('.')]
+
+
 def extract_folder_files(folder_name):
     """Extract all data from the jack files in a directory
 
@@ -41,24 +46,29 @@ def extract_folder_files(folder_name):
     os.chdir(folder_info['path'])
     for file in file_list:
         if jack_test(file):
-            jack_code.append((file, fm.extract_file(file)))
+            jack_code.append((remove_extension(file), fm.extract_file(file)))
     os.chdir(origin_direc)
     return jack_code
+
 
 
 def main(sys_input):
     jack_code = []
     is_folder = folder_test(sys_input)
     if is_folder:
-        jack_code = extract_folder_files(sys_input)
+        folder_name = sys_input
+        folder_info = extract_folder_files(folder_name)
+        folder_engine = ce.CompilationEngine(folder_info, folder_name)
+        folder_engine.start_compilation_engine()
     elif jack_test(sys_input):
-        jack_code.append((sys_input, fm.extract_file(sys_input)))
+        file = sys_input
+        file_info = [(remove_extension(file), fm.extract_file(sys_input))]
+        file_engine = ce.CompilationEngine(file_info)
+        file_engine.start_compilation_engine()
 
-    return
 
 
 
-
-#input = sys.argv[1]
-#main(input)
+input = sys.argv[1]
+main(input)
 
