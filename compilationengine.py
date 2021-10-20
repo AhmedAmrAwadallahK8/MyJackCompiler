@@ -382,12 +382,49 @@ class CompilationEngine:
         return out_xml
 
     def compile_parameter_list(self):
-        pass
+        """ Responsible for parsing a parameter list
+
+        :return: (String) XML representation
+        """
+        out_xml = self.start_rule('parameterList')
+        # Expect type
+        out_xml += self.xml_snippet_ll_1('keyword')  # Could be an indentifier
+        # Expect variable name
+        out_xml += self.xml_snippet_ll_1('identifier')
+        # If a comma is encountered then repeat the following
+        while self.current_token.get_val() == ',':
+            # Expect a ,
+            out_xml += self.xml_snippet_ll_1('symbol')
+            # Expect type
+            out_xml += self.xml_snippet_ll_1('keyword')  # Could be an indentifier
+            # Expect variable name
+            out_xml += self.xml_snippet_ll_1('identifier')
+        out_xml += self.end_rule('parameterList')
+        return out_xml
 
     def compile_subroutine_body(self):
-        pass
+        """ Responsible for parsing a subroutine body
+
+        :return: (String) XML Representation
+        """
+        out_xml = self.start_rule('subroutineBody')
+        #Expect a {
+        out_xml += self.xml_snippet_ll_1('symbol')
+        # Expect variable decleration if current token represents var
+        while self.current_token.get_val() == 'var':
+            out_xml += self.compile_var_dec()
+        # Expect statements
+        out_xml += self.compile_statements()
+        # Expect }
+        out_xml += self.xml_snippet_ll_1('symbol')
+        out_xml += self.end_rule('subroutineBody')
+        return out_xml
 
     def compile_subroutine_dec(self):
+        """Responsible for parsing a subroutine declaration
+
+        :return: (String) XML representation
+        """
         out_xml = self.start_rule('subroutineDec')
         # Expect constructor, function, or method
         out_xml += self.xml_snippet_ll_1('keyword')
@@ -397,21 +434,27 @@ class CompilationEngine:
         out_xml += self.xml_snippet_ll_1('identifier')
         # Expect a (
         out_xml += self.xml_snippet_ll_1('symbol')
-        # Expect a parameter list
-        out_xml += self.compile_parameter_list()
+        # Expect a parameter list if the current token is not a )
+        if self.current_token.get_val() != ')' and self.current_token.get_val() != 'final token':
+            out_xml += self.compile_parameter_list()
         # Expect a )
         out_xml += self.xml_snippet_ll_1('symbol')
         # Expect subroutine body
         out_xml += self.compile_subroutine_body()
 
         out_xml += self.end_rule('subroutineDec')
+        return out_xml
 
     def compile_class(self):
+        """ Responsible for parsing a class
+
+        :return: (String) XML representation
+        """
         out_xml = self.start_rule('class')
         # Expect class
         out_xml += self.xml_snippet_ll_1('keyword')
         # Expect class name
-        out_xml += self.xml_snippet_ll_1('')
+        out_xml += self.xml_snippet_ll_1('identifier')
         # Expect {
         out_xml += self.xml_snippet_ll_1('symbol')
         # Possibly expect class variable declarations
@@ -424,7 +467,8 @@ class CompilationEngine:
             out_xml += self.compile_subroutine_dec()
         # Expect }
         out_xml += self.xml_snippet_ll_1('symbol')
-        out_xml = self.end_rule('class')
+        out_xml += self.end_rule('class')
+        return out_xml
 
 
 
@@ -437,10 +481,10 @@ class CompilationEngine:
 
 test_file_data1 = [('Data1.jack', ['class Square {', 'field int x, y;', 'constructor Square new(int Ax, int Ay, int Asize) {']), ('Data2.jack', ['field int x, y;'])]
 test_file_data2 = [('Data2.jack', ['field int x, y;'])]
-test_file_data3 = [('Data3.jack', ['do greeting.hello(square.explode(x)); '])]
+test_file_data3 = [('Data3.jack', ['class Square{field int x; method void draw(int x, int y){var int z, a; var boolean b; let z = x + y; return z; } method void kill(){do draw(1,2); return;}}'])]
 
 a = CompilationEngine(test_file_data3)
 
 
-print(a.compile_do_statement())
+print(a.compile_class())
 
