@@ -152,7 +152,7 @@ class CompilationEngine:
         out_xml += self.end_rule('varDec')
         return out_xml
 
-    def compile_term(self):  # partially implemented. Havent addressed varNames
+    def compile_term(self):
         """Responsible for parsing a term
 
         :return: (String) XML representation
@@ -380,6 +380,51 @@ class CompilationEngine:
         out_xml += self.xml_snippet_ll_1('symbol')
         out_xml += self.end_rule('ReturnStatement')
         return out_xml
+
+    def compile_parameter_list(self):
+        pass
+
+    def compile_subroutine_body(self):
+        pass
+
+    def compile_subroutine_dec(self):
+        out_xml = self.start_rule('subroutineDec')
+        # Expect constructor, function, or method
+        out_xml += self.xml_snippet_ll_1('keyword')
+        # Expect void or type
+        out_xml += self.xml_snippet_ll_1('keyword')  # Technically this can also expect an identifier
+        # Expect subroutine name
+        out_xml += self.xml_snippet_ll_1('identifier')
+        # Expect a (
+        out_xml += self.xml_snippet_ll_1('symbol')
+        # Expect a parameter list
+        out_xml += self.compile_parameter_list()
+        # Expect a )
+        out_xml += self.xml_snippet_ll_1('symbol')
+        # Expect subroutine body
+        out_xml += self.compile_subroutine_body()
+
+        out_xml += self.end_rule('subroutineDec')
+
+    def compile_class(self):
+        out_xml = self.start_rule('class')
+        # Expect class
+        out_xml += self.xml_snippet_ll_1('keyword')
+        # Expect class name
+        out_xml += self.xml_snippet_ll_1('')
+        # Expect {
+        out_xml += self.xml_snippet_ll_1('symbol')
+        # Possibly expect class variable declarations
+        while self.current_token.get_val() in ('static','field'):
+            # Expect a class variable declaration
+            out_xml += self.compile_class_var_dec()
+        # Possibly expect subroutine declarations
+        while self.current_token.get_val() in ('constructor', 'function', 'method'):
+            # Expect a subroutine declaration
+            out_xml += self.compile_subroutine_dec()
+        # Expect }
+        out_xml += self.xml_snippet_ll_1('symbol')
+        out_xml = self.end_rule('class')
 
 
 
