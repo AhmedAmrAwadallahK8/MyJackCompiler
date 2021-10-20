@@ -187,9 +187,24 @@ class CompilationEngine:
             # Expect )
             out_xml += self.xml_snippet_ll_1('symbol')
         elif self.current_token.get_variety() == 'identifier':
-            # Expect a variable name
-            out_xml += self.xml_snippet_ll_1('identifier')
-        # Still need more if statements for varnames LL2 scenarios but do later
+            # If we have an identifier type token then there are three possibilites
+            # Need to look ahead 1 token to decipher what to do with the current token (LL2)
+            if self.current_tokenizer.peek_next_token().get_val() == '[':  # Arraylike variable
+                # Expect variable name
+                out_xml += self.xml_snippet_ll_1('identifier')
+                # Expect [
+                out_xml += self.xml_snippet_ll_1('symbol')
+                # Expect expression
+                out_xml += self.compile_expression()
+                # Expect ]
+                out_xml += self.xml_snippet_ll_1('symbol')
+            elif (self.current_tokenizer.peek_next_token().get_val() == '(' or
+                  self.current_tokenizer.peek_next_token().get_val() == '.'):  # SubroutineCall
+                # Expect subroutine call
+                out_xml += self.subroutine_call()
+            else:  # variable
+                # Expect variable name
+                out_xml += self.xml_snippet_ll_1('identifier')
         out_xml += self.end_rule('term')
         return out_xml
 
@@ -377,7 +392,7 @@ class CompilationEngine:
 
 test_file_data1 = [('Data1.jack', ['class Square {', 'field int x, y;', 'constructor Square new(int Ax, int Ay, int Asize) {']), ('Data2.jack', ['field int x, y;'])]
 test_file_data2 = [('Data2.jack', ['field int x, y;'])]
-test_file_data3 = [('Data3.jack', ['do hello("test", 5+(3-2), 4*4, ~true); '])]
+test_file_data3 = [('Data3.jack', ['do greeting.hello(square.explode(x)); '])]
 
 a = CompilationEngine(test_file_data3)
 
