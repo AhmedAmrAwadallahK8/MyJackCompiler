@@ -72,7 +72,7 @@ class JackTokenizer:
                      (String) The extracted StringConstant from the substr
             """
             end_ind = substr.find('"')
-            return len(substr[:end_ind]), '"' + substr[:end_ind] + '"'
+            return len(substr[:end_ind]), substr[:end_ind]
 
         def handle_int(substr):
             """Takes in a substring and extracts information necessary for making a integerConstant token
@@ -145,6 +145,7 @@ token_list = tokenize.get_tack_code()
 #print(token_list)
 for token in token_list:
     print(token.get_data())'''
+
 
 
 

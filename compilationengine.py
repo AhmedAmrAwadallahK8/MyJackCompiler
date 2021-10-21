@@ -371,7 +371,7 @@ class CompilationEngine:
 
         :return: (String) XML Representation
         """
-        out_xml = self.start_rule('ReturnStatement')
+        out_xml = self.start_rule('returnStatement')
         # Expect a return
         out_xml += self.xml_snippet(['keyword'])
         # Expect either an expression or ;
@@ -380,7 +380,7 @@ class CompilationEngine:
             out_xml += self.compile_expression()
         # Expect a ;
         out_xml += self.xml_snippet(['symbol'])
-        out_xml += self.end_rule('ReturnStatement')
+        out_xml += self.end_rule('returnStatement')
         return out_xml
 
     def compile_parameter_list(self):
