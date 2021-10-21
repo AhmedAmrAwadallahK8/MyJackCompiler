@@ -8,11 +8,11 @@ def clean_jack_code(jack_code):
     endline_jack_code = []
     cleaned_jack_code = []
     t2_comment_found = False
-    # Remove endlines
+    # Remove endlines and strip whitespace
     for line in jack_code:
         endline_ind = line.find('\n')
         if endline_ind != -1:
-            endline_jack_code.append(line[:endline_ind])
+            endline_jack_code.append(line[:endline_ind].strip())
 
     # Remove Comments
     for line in endline_jack_code:
