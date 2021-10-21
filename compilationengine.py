@@ -4,7 +4,7 @@ import jackjanitor as jj
 
 
 class CompilationEngine:
-    ops = ('+', '-', '*', '/', '>', '<', '=', '|', '&')
+    ops = ('+', '-', '*', '/', '&gt;', '&lt;', '=', '|', '&amp;')
     unary_ops = ('-', '~')
     keyword_constant = ('true', 'false', 'null', 'this')
     jack_statements = ('let', 'do', 'while', 'if', 'return')
@@ -89,9 +89,8 @@ class CompilationEngine:
             xml_out += self.xml_snippet(['identifier'])
             # Expect (
             xml_out += self.xml_snippet(['symbol'])
-            # Expect expressionList only if the token is not currently a )
-            if self.current_token.get_val() != ')':
-                xml_out += self.compile_expression_list()
+            # Expect expressionList even if its empty
+            xml_out += self.compile_expression_list()
             # Expect )
             xml_out += self.xml_snippet(['symbol'])
         elif self.current_tokenizer.peek_next_token().get_val() == '.':
@@ -104,8 +103,7 @@ class CompilationEngine:
             # Expect (
             xml_out += self.xml_snippet(['symbol'])
             # Expect expressionList
-            if self.current_token.get_val() != ')':
-                xml_out += self.compile_expression_list()
+            xml_out += self.compile_expression_list()
             # Expect )
             xml_out += self.xml_snippet(['symbol'])
         return xml_out
@@ -235,16 +233,16 @@ class CompilationEngine:
 
         :return: (String) XML representation
         """
-
         xml_out = self.start_rule('expressionList')
-        # Expect expression
-        xml_out += self.compile_expression()
-        # If next token is , expect more expressions
-        while self.current_token.get_val() == ',':
-            # Expect a ,
-            xml_out += self.xml_snippet(['symbol'])
+        if self.current_token.get_val() != ')':
             # Expect expression
             xml_out += self.compile_expression()
+            # If next token is , expect more expressions
+            while self.current_token.get_val() == ',':
+                # Expect a ,
+                xml_out += self.xml_snippet(['symbol'])
+                # Expect expression
+                xml_out += self.compile_expression()
         xml_out += self.end_rule('expressionList')
         return xml_out
 
@@ -391,18 +389,19 @@ class CompilationEngine:
         :return: (String) XML representation
         """
         out_xml = self.start_rule('parameterList')
-        # Expect type
-        out_xml += self.xml_snippet(['keyword', 'identifier'])  # Could be an indentifier
-        # Expect variable name
-        out_xml += self.xml_snippet(['identifier'])
-        # If a comma is encountered then repeat the following
-        while self.current_token.get_val() == ',':
-            # Expect a ,
-            out_xml += self.xml_snippet(['symbol'])
+        if self.current_token.get_val() != ')':
             # Expect type
             out_xml += self.xml_snippet(['keyword', 'identifier'])  # Could be an indentifier
             # Expect variable name
             out_xml += self.xml_snippet(['identifier'])
+            # If a comma is encountered then repeat the following
+            while self.current_token.get_val() == ',':
+                # Expect a ,
+                out_xml += self.xml_snippet(['symbol'])
+                # Expect type
+                out_xml += self.xml_snippet(['keyword', 'identifier'])  # Could be an indentifier
+                # Expect variable name
+                out_xml += self.xml_snippet(['identifier'])
         out_xml += self.end_rule('parameterList')
         return out_xml
 
@@ -438,9 +437,8 @@ class CompilationEngine:
         out_xml += self.xml_snippet(['identifier'])
         # Expect a (
         out_xml += self.xml_snippet(['symbol'])
-        # Expect a parameter list if the current token is not a )
-        if self.current_token.get_val() != ')' and self.current_token.get_val() != 'final token':
-            out_xml += self.compile_parameter_list()
+        # Expect a parameter list
+        out_xml += self.compile_parameter_list()
         # Expect a )
         out_xml += self.xml_snippet(['symbol'])
         # Expect subroutine body
