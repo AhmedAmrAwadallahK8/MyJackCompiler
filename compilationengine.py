@@ -167,9 +167,9 @@ class CompilationEngine:
             # Expect integer
             out_xml += self.xml_snippet(['integerConstant'])
         # String encountered
-        elif self.current_token.get_variety() == 'StringConstant':
+        elif self.current_token.get_variety() == 'stringConstant':
             # Expect String
-            out_xml += self.xml_snippet(['StringConstant'])
+            out_xml += self.xml_snippet(['stringConstant'])
         # Keyword constant encountered
         elif self.current_token.get_val() in self.keyword_constant:
             # Expect keyword constant

@@ -70,7 +70,7 @@
 					</expression>
 					<symbol> ; </symbol>
 				</letStatement>
-				<ReturnStatement>
+				<returnStatement>
 					<keyword> return </keyword>
 					<expression>
 						<term>
@@ -78,7 +78,7 @@
 						</term>
 					</expression>
 					<symbol> ; </symbol>
-				</ReturnStatement>
+				</returnStatement>
 			</statements>
 			<symbol> } </symbol>
 		</subroutineBody>
@@ -121,10 +121,10 @@
 					<symbol> ) </symbol>
 					<symbol> ; </symbol>
 				</doStatement>
-				<ReturnStatement>
+				<returnStatement>
 					<keyword> return </keyword>
 					<symbol> ; </symbol>
-				</ReturnStatement>
+				</returnStatement>
 			</statements>
 			<symbol> } </symbol>
 		</subroutineBody>
@@ -272,10 +272,10 @@
 					<symbol> ) </symbol>
 					<symbol> ; </symbol>
 				</doStatement>
-				<ReturnStatement>
+				<returnStatement>
 					<keyword> return </keyword>
 					<symbol> ; </symbol>
-				</ReturnStatement>
+				</returnStatement>
 			</statements>
 			<symbol> } </symbol>
 		</subroutineBody>
@@ -631,10 +631,10 @@
 					</statements>
 					<symbol> } </symbol>
 				</whileStatement>
-				<ReturnStatement>
+				<returnStatement>
 					<keyword> return </keyword>
 					<symbol> ; </symbol>
-				</ReturnStatement>
+				</returnStatement>
 			</statements>
 			<symbol> } </symbol>
 		</subroutineBody>

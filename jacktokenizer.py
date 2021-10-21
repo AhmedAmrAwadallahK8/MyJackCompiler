@@ -103,7 +103,7 @@ class JackTokenizer:
                     o_i = i
                 elif tok == '"':  # Quotes indicate a StringConstant Token
                     len_str_tok, str_tok = handle_string(mid_line[1:])
-                    self.tack_code.append(t.JackToken('StringConstant', str_tok))
+                    self.tack_code.append(t.JackToken('stringConstant', str_tok))
                     i += 1 + len_str_tok  # Move the index past the entire string that handle_string found
                     o_i = i
                 elif tok.isdigit():  # Condition indicates a integerConstant Token is present
