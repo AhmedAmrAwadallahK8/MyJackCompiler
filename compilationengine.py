@@ -18,8 +18,8 @@ class CompilationEngine:
             # First and second element of file store the file_name and the file_contents respectively
             file_contents_cleaned = jj.clean_jack_code(file[1])
             self.tokenizers.append(jt.JackTokenizer(file[0], file_contents_cleaned))
-        self.current_tokenizer = self.tokenizers[self.tokenizer_ind]
-        self.current_token = self.current_tokenizer.get_ind_token()
+        self.current_tokenizer = self.tokenizers[self.tokenizer_ind] # Might be redundant
+        self.current_token = self.current_tokenizer.get_ind_token() # Might be redundant
 
     def next_token(self):
         """Advance to the next token if there is one otherwise report no tokens left to console
@@ -482,6 +482,7 @@ class CompilationEngine:
         """
         for tokenizer in self.tokenizers:
             self.current_tokenizer = tokenizer
+            self.current_token = self.current_tokenizer.get_ind_token()
             xml_code = self.compile_class()
             fm.load_file(self.current_tokenizer.get_file_name(), '.xml', xml_code, self.folder_name)
 
