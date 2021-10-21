@@ -65,8 +65,6 @@ def main(sys_input):
         file_engine = ce.CompilationEngine(file_info)
         file_engine.start_compilation_engine()
 
-# TODO Deal with types sometimes not being a keyword but rather an identifier
-
 
 #input = sys.argv[1]
 main('ExpressionLessSquare')

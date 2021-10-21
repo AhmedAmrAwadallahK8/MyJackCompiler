@@ -42,5 +42,3 @@ def clean_jack_code(jack_code):
                     cleaned_jack_code.append(line[comment_ind_t2_e+2:])
                 t2_comment_found = False
     return cleaned_jack_code
-
-
