@@ -1,5 +1,6 @@
 import jacktokenizer as jt
 import filemediator as fm
+import jackjanitor as jj
 
 
 class CompilationEngine:
@@ -15,7 +16,8 @@ class CompilationEngine:
         self.tab_num = 0
         for file in file_data:
             # First and second element of file store the file_name and the file_contents respectively
-            self.tokenizers.append(jt.JackTokenizer(file[0], file[1]))
+            file_contents_cleaned = jj.clean_jack_code(file[1])
+            self.tokenizers.append(jt.JackTokenizer(file[0], file_contents_cleaned))
         self.current_tokenizer = self.tokenizers[self.tokenizer_ind]
         self.current_token = self.current_tokenizer.get_ind_token()
 

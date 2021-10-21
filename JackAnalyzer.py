@@ -51,7 +51,6 @@ def extract_folder_files(folder_name):
     return jack_code
 
 
-
 def main(sys_input):
     jack_code = []
     is_folder = folder_test(sys_input)
