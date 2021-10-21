@@ -58,16 +58,16 @@ def main(sys_input):
         folder_name = sys_input
         folder_info = extract_folder_files(folder_name)
         folder_engine = ce.CompilationEngine(folder_info, folder_name)
-        folder_engine.start_compilation_engine()
+        #folder_engine.start_compilation_engine()
     elif jack_test(sys_input):
         file = sys_input
         file_info = [(remove_extension(file), fm.extract_file(sys_input))]
         file_engine = ce.CompilationEngine(file_info)
-        file_engine.start_compilation_engine()
+        #file_engine.start_compilation_engine()
 
 
 
 
-input = sys.argv[1]
-main(input)
+#input = sys.argv[1]
+main('Main.jack')
 

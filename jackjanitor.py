@@ -11,7 +11,6 @@ def clean_jack_code(jack_code):
     # Remove endlines
     for line in jack_code:
         endline_ind = line.find('\n')
-        print(endline_ind)
         if endline_ind != -1:
             endline_jack_code.append(line[:endline_ind])
 
@@ -20,12 +19,8 @@ def clean_jack_code(jack_code):
         comment_ind_t1 = line.find('//')
         comment_ind_t2_s = line.find('/**')
         comment_ind_t2_e = line.find('*/')
-        print(line)
-        print(len(line))
-        print(comment_ind_t2_e)
-        print('_________________')
         # Remove Comments
-        if comment_ind_t1 == -1 and comment_ind_t2_s == -1 and comment_ind_t2_e != -1 and not t2_comment_found:
+        if comment_ind_t1 == -1 and comment_ind_t2_s == -1 and comment_ind_t2_e == -1 and not t2_comment_found:
             cleaned_jack_code.append(line)
         elif comment_ind_t1 == 0:
             pass
