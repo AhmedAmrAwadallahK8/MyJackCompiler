@@ -66,6 +66,6 @@ def main(sys_input):
         file_engine.start_compilation_engine()
 
 
-#input = sys.argv[1]
-main('ExpressionLessSquare')
+user_input = sys.argv[1]
+main(user_input)
 
