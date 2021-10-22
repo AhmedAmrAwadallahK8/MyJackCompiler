@@ -1,7 +1,7 @@
 import sys
 import os
 import filemediator as fm
-import xmlcompilationengine as xce
+import compilationengine as ce
 
 
 def folder_test(file_name):
@@ -57,12 +57,12 @@ def main(sys_input):
     if is_folder:
         folder_name = sys_input
         folder_info = extract_folder_files(folder_name)
-        folder_engine = xce.XMLCompilationEngine(folder_info, folder_name)
+        folder_engine = ce.CompilationEngine(folder_info, folder_name)
         folder_engine.start_compilation_engine()
     elif jack_test(sys_input):
         file = sys_input
         file_info = [(remove_extension(file), fm.extract_file(sys_input))]
-        file_engine = xce.XMLCompilationEngine(file_info)
+        file_engine = ce.CompilationEngine(file_info)
         file_engine.start_compilation_engine()
 
 
