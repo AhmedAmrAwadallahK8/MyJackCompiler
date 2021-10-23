@@ -1,27 +1,16 @@
 
 class SymbolTable:
-    def __init__(self, class_table=None):
+    def __init__(self, parent_table=None):
         self.table = {}
         self.kind_count = {'static': 0, 'field': 0, 'argument': 0, 'variable': 0}
-        self.class_table = class_table
-        if class_table is None:
-            self.sub_table = SymbolTable(self)
-
-    def get_sub(self):
-        """Getter
-
-        :return: (SymbolTable) The sub_table for this SymbolTable
-        """
-        return self.sub_table
+        self.parent_table = parent_table
 
     def start_subroutine(self):
         """Resets the state of the subroutine symbol table to default
 
-        :return: None
+        :return: (SymbolTable) A SymbleTable object that is will have a link to the SymbolTable that called this method
         """
-        self.sub_table.table = {}
-        for k in self.sub_table.kind_count:
-            self.sub_table.kind_count[k] = 0
+        return SymbolTable(self)
 
     def define(self, name, j_type, kind):
         """Updates the symbol table with a new variable
@@ -69,10 +58,16 @@ class SymbolTable:
 
 
 '''a = SymbolTable()
-b = a.get_sub()
+b = a.start_subroutine()
 a.define('x', 'int', 'argument')
 print(a.table)
 print(a.var_count('argument'))
 print(a.kind_of('x'))
 print(a.type_of('x'))
-print(a.index_of('x'))'''
+print(a.index_of('x'))
+b.define('y', 'int', 'argument')
+print(b.table)
+print(b.kind_count)
+b = a.start_subroutine()
+print(b.table)
+print(b.kind_count)'''

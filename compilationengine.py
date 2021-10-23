@@ -1,6 +1,7 @@
 import jacktokenizer as jt
 import filemediator as fm
 import jackjanitor as jj
+import symboltable as st
 
 
 class CompilationEngine:
@@ -20,6 +21,7 @@ class CompilationEngine:
             self.tokenizers.append(jt.JackTokenizer(file[0], file_contents_cleaned))
         self.current_tokenizer = self.tokenizers[self.tokenizer_ind] # Might be redundant
         self.current_token = self.current_tokenizer.get_ind_token() # Might be redundant
+        self.class_tab = st.SymbolTable()
 
     def next_token(self):
         """Advance to the next token if there is one otherwise report no tokens left to console
@@ -114,12 +116,14 @@ class CompilationEngine:
         :return: (String) XML representation
         """
         out_xml = self.start_rule('classVarDec')
+        # TODO adjust the code below until the next todo with the new symboltable
         # Expect Keyword = static or field
         out_xml += self.xml_snippet(['keyword'])
         # Expect a type
         out_xml += self.xml_snippet(['keyword', 'identifier'])
         # Expect a variable name
         out_xml += self.xml_snippet(['identifier'])
+        # TODO
         # Expect ; or expect , and then a variable name repeating until ; is met
         while self.current_token.get_val() != ';' and self.current_token.get_val() != 'final token':
             # Expect a comma
@@ -137,12 +141,14 @@ class CompilationEngine:
         :return: (String) XML representation
         """
         out_xml = self.start_rule('varDec')
+        # TODO adjust the code below until the next todo with the new symboltable
         # Expect Keyword = var
         out_xml += self.xml_snippet(['keyword', 'identifier'])
         # Expect a type
         out_xml += self.xml_snippet(['keyword', 'identifier'])
         # Expect a variable name
         out_xml += self.xml_snippet(['identifier'])
+        # TODO
         # Expect ; or expect more variable names
         while self.current_token.get_val() != ';' and self.current_token.get_val() != 'final token':
             # Expect a comma
@@ -390,6 +396,7 @@ class CompilationEngine:
         """
         out_xml = self.start_rule('parameterList')
         if self.current_token.get_val() != ')':
+            # TODO adjust the code below until the next todo with the new symboltable
             # Expect type
             out_xml += self.xml_snippet(['keyword', 'identifier'])  # Could be an indentifier
             # Expect variable name
@@ -402,6 +409,7 @@ class CompilationEngine:
                 out_xml += self.xml_snippet(['keyword', 'identifier'])  # Could be an indentifier
                 # Expect variable name
                 out_xml += self.xml_snippet(['identifier'])
+            # TODO
         out_xml += self.end_rule('parameterList')
         return out_xml
 
@@ -430,7 +438,9 @@ class CompilationEngine:
         """
         out_xml = self.start_rule('subroutineDec')
         # Expect constructor, function, or method
+        # TODO adjust the code below until the next todo with the new symboltable (method implies first argue is this)
         out_xml += self.xml_snippet(['keyword'])
+        # TODO
         # Expect void or type
         out_xml += self.xml_snippet(['keyword', 'identifier'])  # Technically this can also expect an identifier
         # Expect subroutine name
