@@ -38,7 +38,10 @@ class SymbolTable:
         :param name: (String) name of variable
         :return: (String) the variables's kind
         """
-        return self.table[name][1]
+        if name in self.table.keys():
+            return self.table[name][1]
+        else:
+            return None
 
     def type_of(self, name):
         """For a given variable name return its type
