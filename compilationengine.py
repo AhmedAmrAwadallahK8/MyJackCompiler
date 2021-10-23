@@ -77,6 +77,29 @@ class CompilationEngine:
         self.next_token()
         return xml_code
 
+    def xml_snippet_declare(self):
+        xml_code = '\t' * self.tab_num
+        xml_code += '<VariableDeclaration>'
+        xml_code += self.current_token.get_val()
+        xml_code += ' </VariableDeclaration>\n'
+        return xml_code
+
+    def get_token(self):
+        """ Returns the value stored in current token
+
+        :return: (String) Value stored in current token
+        """
+        return self.current_token.get_val()
+
+    def get_token_advance(self):
+        """Gets the value stored in the current token then advances the token. The value is then returned
+
+        :return: (String) Value stored in current token
+        """
+        token_val = self.current_token.get_val()
+        self.next_token()
+        return token_val
+
     def subroutine_call(self):
         """Responsible for handing the terminal rule, subroutineCall
 
@@ -118,11 +141,18 @@ class CompilationEngine:
         out_xml = self.start_rule('classVarDec')
         # TODO adjust the code below until the next todo with the new symboltable
         # Expect Keyword = static or field
+        kind = self.get_token_advance()
+        # Expect a type
+        type = self.get_token_advance()
+        # Expect a name
+        name = self.get_token_advance()
+
+        '''# Expect Keyword = static or field
         out_xml += self.xml_snippet(['keyword'])
         # Expect a type
         out_xml += self.xml_snippet(['keyword', 'identifier'])
         # Expect a variable name
-        out_xml += self.xml_snippet(['identifier'])
+        out_xml += self.xml_snippet(['identifier'])'''
         # TODO
         # Expect ; or expect , and then a variable name repeating until ; is met
         while self.current_token.get_val() != ';' and self.current_token.get_val() != 'final token':
@@ -491,7 +521,9 @@ class CompilationEngine:
         for tokenizer in self.tokenizers:
             self.current_tokenizer = tokenizer
             self.current_token = self.current_tokenizer.get_ind_token()
+            # TODO Need to remember to reset the symbol table when we enter a new class file
             xml_code = self.compile_class()
+            # TODO Eventaully change .xml to .vm
             fm.load_file(self.current_tokenizer.get_file_name(), '.xml', xml_code, self.folder_name)
 
 
