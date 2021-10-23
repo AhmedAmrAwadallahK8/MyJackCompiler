@@ -21,7 +21,7 @@ class CompilationEngine:
             self.tokenizers.append(jt.JackTokenizer(file[0], file_contents_cleaned))
         self.current_tokenizer = self.tokenizers[self.tokenizer_ind] # Might be redundant
         self.current_token = self.current_tokenizer.get_ind_token() # Might be redundant
-        self.scope_table = st.SymbolTable()
+        self.scope_table = None
 
     def next_token(self):
         """Advance to the next token if there is one otherwise report no tokens left to console
@@ -85,7 +85,7 @@ class CompilationEngine:
         """
         xml_code = '\t' * self.tab_num
         xml_code += '<VariableDeclaration>'
-        xml_code += name + ' ' + str(self.scope_table.table[name])
+        xml_code += ' ' + name + ' ' + str(self.scope_table.table[name])
         xml_code += ' </VariableDeclaration>\n'
         return xml_code
 
@@ -138,19 +138,13 @@ class CompilationEngine:
             xml_out += self.xml_snippet(['symbol'])
         return xml_out
 
-    def add_symbol(self):
+    def add_symbol(self, name, j_type, kind):
         """Adds symbol to table and makes xml snippet for it
 
         :return: XML Representation
         """
-        # Expect Keyword = static or field
-        kind = self.get_token_advance()
-        # Expect a type
-        type = self.get_token_advance()
-        # Expect a name
-        name = self.get_token_advance()
         # Create a new scope variable
-        self.scope_table.define(name, type, kind)
+        self.scope_table.define(name, j_type, kind)
         # Create new xml declaration code
         return self.xml_snippet_declare(name)
 
@@ -161,8 +155,13 @@ class CompilationEngine:
         """
         out_xml = self.start_rule('classVarDec')
         # TODO adjust the code below until the next todo with the new symboltable
-        # Expect keyword > type > varname
-        out_xml += self.add_symbol()
+        # Expect Keyword = static or field
+        kind = self.get_token_advance()
+        # Expect a type
+        j_type = self.get_token_advance()
+        # Expect a variable name
+        name = self.get_token_advance()
+        out_xml += self.add_symbol(name, j_type, kind)
         '''# Expect Keyword = static or field
         out_xml += self.xml_snippet(['keyword'])
         # Expect a type
@@ -175,7 +174,10 @@ class CompilationEngine:
             # Expect a comma
             out_xml += self.xml_snippet(['symbol'])
             # Expect a variable name
-            out_xml += self.xml_snippet(['identifier'])
+            name = self.get_token_advance()
+            out_xml += self.add_symbol(name, j_type, kind)
+            '''# Expect a variable name
+            out_xml += self.xml_snippet(['identifier'])'''
         # Expect a ;
         out_xml += self.xml_snippet(['symbol'])
         out_xml += self.end_rule('classVarDec')
@@ -188,8 +190,13 @@ class CompilationEngine:
         """
         out_xml = self.start_rule('varDec')
         # TODO adjust the code below until the next todo with the new symboltable
-        # Expect keyword > type > varname
-        out_xml += self.add_symbol()
+        # Expect Keyword = var
+        kind = self.get_token_advance()
+        # Expect a type
+        j_type = self.get_token_advance()
+        # Expect a variable name
+        name = self.get_token_advance()
+        out_xml += self.add_symbol(name, j_type, kind)
         '''# Expect Keyword = var
         out_xml += self.xml_snippet(['keyword', 'identifier'])
         # Expect a type
@@ -202,7 +209,10 @@ class CompilationEngine:
             # Expect a comma
             out_xml += self.xml_snippet(['symbol'])
             # Expect a variable name
-            out_xml += self.xml_snippet(['identifier'])
+            name = self.get_token_advance()
+            out_xml += self.add_symbol(name, j_type, kind)
+            '''# Expect a variable name
+            out_xml += self.xml_snippet(['identifier'])'''
         # Expect a ;
         out_xml += self.xml_snippet(['symbol'])
         out_xml += self.end_rule('varDec')
@@ -523,6 +533,9 @@ class CompilationEngine:
             out_xml += self.compile_class_var_dec()
         # Possibly expect subroutine declarations
         while self.current_token.get_val() in ('constructor', 'function', 'method'):
+            if self.scope_table.parent_table is not None:
+                self.scope_table = self.scope_table.parent_table
+            self.scope_table = self.scope_table.start_subroutine()
             # Expect a subroutine declaration
             out_xml += self.compile_subroutine_dec()
         # Expect }
@@ -537,9 +550,9 @@ class CompilationEngine:
         :return: None
         """
         for tokenizer in self.tokenizers:
+            self.scope_table = st.SymbolTable()
             self.current_tokenizer = tokenizer
             self.current_token = self.current_tokenizer.get_ind_token()
-            # TODO Need to remember to reset the symbol table when we enter a new class file
             xml_code = self.compile_class()
             # TODO Eventaully change .xml to .vm
             fm.load_file(self.current_tokenizer.get_file_name(), '.xml', xml_code, self.folder_name)
