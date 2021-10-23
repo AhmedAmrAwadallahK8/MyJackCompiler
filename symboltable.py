@@ -31,7 +31,6 @@ class SymbolTable:
         """
         return self.kind_count[kind]
 
-    # TODO This function is not complete must be able to handle situations where the identifier is unknown in scope
     def kind_of(self, name):
         """For a given variable name return its kind
 
