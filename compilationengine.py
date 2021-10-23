@@ -96,10 +96,23 @@ class CompilationEngine:
         :param name: (String) Name of the variable
         :return: XML Representation
         """
-        xml_code = '\t' * self.tab_num
-        xml_code += '<VariableUse>'
-        xml_code += ' ' + name + ' ' + str(self.scope_table.table[name])
-        xml_code += ' </VariableUse>\n'
+        xml_code = ''
+        current_scope = self.scope_table
+        while current_scope is not None:
+            if name not in current_scope.table.keys():
+                current_scope = current_scope.parent_table
+            else:
+                xml_code = '\t' * self.tab_num
+                xml_code += '<VariableUse>'
+                xml_code += ' ' + name + ' ' + str(current_scope.table[name])
+                xml_code += ' </VariableUse>\n'
+                break
+        else:
+            xml_code = '\t' * self.tab_num
+            xml_code += '<ClassNameOrSubroutine>'
+            xml_code += name
+            xml_code += ' </ClassNameOrSubroutine>\n'
+
         return xml_code
 
     def get_token(self):
@@ -129,7 +142,10 @@ class CompilationEngine:
         xml_out = ''
         if self.current_tokenizer.peek_next_token().get_val() == '(':
             # Expect subroutineName
-            xml_out += self.xml_snippet(['identifier'])
+            name = self.get_token_advance()
+            xml_out += self.xml_snippet_use_var(name)
+            '''# Expect subroutineName
+            xml_out += self.xml_snippet(['identifier'])'''
             # Expect (
             xml_out += self.xml_snippet(['symbol'])
             # Expect expressionList even if its empty
@@ -138,11 +154,17 @@ class CompilationEngine:
             xml_out += self.xml_snippet(['symbol'])
         elif self.current_tokenizer.peek_next_token().get_val() == '.':
             # Expect className/varName
-            xml_out += self.xml_snippet(['identifier'])
+            name = self.get_token_advance()
+            xml_out += self.xml_snippet_use_var(name)
+            '''# Expect className/varName
+            xml_out += self.xml_snippet(['identifier'])'''
             # Expect a .
             xml_out += self.xml_snippet(['symbol'])
             # Expect subroutineName
-            xml_out += self.xml_snippet(['identifier'])
+            name = self.get_token_advance()
+            xml_out += self.xml_snippet_use_var(name)
+            '''# Expect subroutineName
+            xml_out += self.xml_snippet(['identifier'])'''
             # Expect (
             xml_out += self.xml_snippet(['symbol'])
             # Expect expressionList

@@ -12,6 +12,7 @@ class Main {
     function void main(int A, int B, Point C) {
         var SquareGame game, dance;
         let game = test;
+        let game = SquareGame.new();
         do game.run();
         do game.dispose();
         return;
