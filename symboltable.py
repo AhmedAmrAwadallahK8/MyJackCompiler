@@ -2,7 +2,7 @@
 class SymbolTable:
     def __init__(self, parent_table=None):
         self.table = {}
-        self.kind_count = {'static': 0, 'field': 0, 'argument': 0, 'variable': 0}
+        self.kind_count = {'static': 0, 'field': 0, 'argument': 0, 'var': 0}
         self.parent_table = parent_table
 
     def start_subroutine(self):

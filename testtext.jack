@@ -1,0 +1,10 @@
+class Main {
+    static boolean test;    // Added for testing -- there is no static keyword
+    function void main() {
+        var SquareGame game;
+        let game = game;
+        do game.run();
+        do game.dispose();
+        return;
+    }
+}

@@ -66,6 +66,6 @@ def main(sys_input):
         file_engine.start_compilation_engine()
 
 
-user_input = sys.argv[1]
-main(user_input)
+# user_input = sys.argv[1]
+main('Main.jack')
 

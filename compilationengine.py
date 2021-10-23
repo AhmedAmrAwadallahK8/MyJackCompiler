@@ -21,7 +21,7 @@ class CompilationEngine:
             self.tokenizers.append(jt.JackTokenizer(file[0], file_contents_cleaned))
         self.current_tokenizer = self.tokenizers[self.tokenizer_ind] # Might be redundant
         self.current_token = self.current_tokenizer.get_ind_token() # Might be redundant
-        self.class_tab = st.SymbolTable()
+        self.scope_table = st.SymbolTable()
 
     def next_token(self):
         """Advance to the next token if there is one otherwise report no tokens left to console
@@ -77,10 +77,15 @@ class CompilationEngine:
         self.next_token()
         return xml_code
 
-    def xml_snippet_declare(self):
+    def xml_snippet_declare(self, name):
+        """ Outputs xml code pertaining to variable declarations
+
+        :param name: name of the variable
+        :return: XML Representation
+        """
         xml_code = '\t' * self.tab_num
         xml_code += '<VariableDeclaration>'
-        xml_code += self.current_token.get_val()
+        xml_code += name + ' ' + str(self.scope_table.table[name])
         xml_code += ' </VariableDeclaration>\n'
         return xml_code
 
@@ -133,6 +138,22 @@ class CompilationEngine:
             xml_out += self.xml_snippet(['symbol'])
         return xml_out
 
+    def add_symbol(self):
+        """Adds symbol to table and makes xml snippet for it
+
+        :return: XML Representation
+        """
+        # Expect Keyword = static or field
+        kind = self.get_token_advance()
+        # Expect a type
+        type = self.get_token_advance()
+        # Expect a name
+        name = self.get_token_advance()
+        # Create a new scope variable
+        self.scope_table.define(name, type, kind)
+        # Create new xml declaration code
+        return self.xml_snippet_declare(name)
+
     def compile_class_var_dec(self):
         """Responsible for parsing a class variable declaration
 
@@ -140,13 +161,8 @@ class CompilationEngine:
         """
         out_xml = self.start_rule('classVarDec')
         # TODO adjust the code below until the next todo with the new symboltable
-        # Expect Keyword = static or field
-        kind = self.get_token_advance()
-        # Expect a type
-        type = self.get_token_advance()
-        # Expect a name
-        name = self.get_token_advance()
-
+        # Expect keyword > type > varname
+        out_xml += self.add_symbol()
         '''# Expect Keyword = static or field
         out_xml += self.xml_snippet(['keyword'])
         # Expect a type
@@ -172,12 +188,14 @@ class CompilationEngine:
         """
         out_xml = self.start_rule('varDec')
         # TODO adjust the code below until the next todo with the new symboltable
-        # Expect Keyword = var
+        # Expect keyword > type > varname
+        out_xml += self.add_symbol()
+        '''# Expect Keyword = var
         out_xml += self.xml_snippet(['keyword', 'identifier'])
         # Expect a type
         out_xml += self.xml_snippet(['keyword', 'identifier'])
         # Expect a variable name
-        out_xml += self.xml_snippet(['identifier'])
+        out_xml += self.xml_snippet(['identifier'])'''
         # TODO
         # Expect ; or expect more variable names
         while self.current_token.get_val() != ';' and self.current_token.get_val() != 'final token':
@@ -539,8 +557,8 @@ class CompilationEngine:
 '''test_file_data1 = [('Data1.jack', ['class Square {', 'field int x, y;', 'constructor Square new(int Ax, int Ay, int Asize) {']), ('Data2.jack', ['field int x, y;'])]
 test_file_data2 = [('Data2.jack', ['field int x, y;'])]
 test_file_data3 = [('Data3', ['class Square{field int x; method void draw(int x, int y){var int z, a; var boolean b; let z = x + y; return z; } method void kill(){do draw(1,2); return;}}'])]
-
-a = CompilationEngine(test_file_data3, 'ExpressionLessSquare')
+test_file_data4 = [('Data4', ['class Square { field int x; }'])]
+a = CompilationEngine(test_file_data4)
 
 
 a.start_compilation_engine()'''
