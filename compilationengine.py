@@ -131,7 +131,7 @@ class CompilationEngine:
         self.next_token()
         return token_val
 
-    def subroutine_call(self): # TODO Handle term scope properly
+    def subroutine_call(self):
         """Responsible for handing the terminal rule, subroutineCall
 
         :return: (String) XML Representation
@@ -144,8 +144,6 @@ class CompilationEngine:
             # Expect subroutineName
             name = self.get_token_advance()
             xml_out += self.xml_snippet_use_var(name)
-            '''# Expect subroutineName
-            xml_out += self.xml_snippet(['identifier'])'''
             # Expect (
             xml_out += self.xml_snippet(['symbol'])
             # Expect expressionList even if its empty
@@ -156,15 +154,11 @@ class CompilationEngine:
             # Expect className/varName
             name = self.get_token_advance()
             xml_out += self.xml_snippet_use_var(name)
-            '''# Expect className/varName
-            xml_out += self.xml_snippet(['identifier'])'''
             # Expect a .
             xml_out += self.xml_snippet(['symbol'])
             # Expect subroutineName
             name = self.get_token_advance()
             xml_out += self.xml_snippet_use_var(name)
-            '''# Expect subroutineName
-            xml_out += self.xml_snippet(['identifier'])'''
             # Expect (
             xml_out += self.xml_snippet(['symbol'])
             # Expect expressionList
@@ -189,7 +183,6 @@ class CompilationEngine:
         :return: (String) XML representation
         """
         out_xml = self.start_rule('classVarDec')
-        # TODO adjust the code below until the next todo with the new symboltable
         # Expect Keyword = static or field
         kind = self.get_token_advance()
         # Expect a type
@@ -197,13 +190,6 @@ class CompilationEngine:
         # Expect a variable name
         name = self.get_token_advance()
         out_xml += self.add_symbol(name, j_type, kind)
-        '''# Expect Keyword = static or field
-        out_xml += self.xml_snippet(['keyword'])
-        # Expect a type
-        out_xml += self.xml_snippet(['keyword', 'identifier'])
-        # Expect a variable name
-        out_xml += self.xml_snippet(['identifier'])'''
-        # TODO
         # Expect ; or expect , and then a variable name repeating until ; is met
         while self.current_token.get_val() != ';' and self.current_token.get_val() != 'final token':
             # Expect a comma
@@ -211,8 +197,6 @@ class CompilationEngine:
             # Expect a variable name
             name = self.get_token_advance()
             out_xml += self.add_symbol(name, j_type, kind)
-            '''# Expect a variable name
-            out_xml += self.xml_snippet(['identifier'])'''
         # Expect a ;
         out_xml += self.xml_snippet(['symbol'])
         out_xml += self.end_rule('classVarDec')
@@ -224,7 +208,6 @@ class CompilationEngine:
         :return: (String) XML representation
         """
         out_xml = self.start_rule('varDec')
-        # TODO adjust the code below until the next todo with the new symboltable
         # Expect Keyword = var
         kind = self.get_token_advance()
         # Expect a type
@@ -232,13 +215,6 @@ class CompilationEngine:
         # Expect a variable name
         name = self.get_token_advance()
         out_xml += self.add_symbol(name, j_type, kind)
-        '''# Expect Keyword = var
-        out_xml += self.xml_snippet(['keyword', 'identifier'])
-        # Expect a type
-        out_xml += self.xml_snippet(['keyword', 'identifier'])
-        # Expect a variable name
-        out_xml += self.xml_snippet(['identifier'])'''
-        # TODO
         # Expect ; or expect more variable names
         while self.current_token.get_val() != ';' and self.current_token.get_val() != 'final token':
             # Expect a comma
@@ -246,14 +222,12 @@ class CompilationEngine:
             # Expect a variable name
             name = self.get_token_advance()
             out_xml += self.add_symbol(name, j_type, kind)
-            '''# Expect a variable name
-            out_xml += self.xml_snippet(['identifier'])'''
         # Expect a ;
         out_xml += self.xml_snippet(['symbol'])
         out_xml += self.end_rule('varDec')
         return out_xml
 
-    def compile_term(self):  # TODO Use term properly
+    def compile_term(self):
         """Responsible for parsing a term
 
         :return: (String) XML representation
@@ -294,8 +268,6 @@ class CompilationEngine:
                 # Expect variable name
                 name = self.get_token_advance()
                 out_xml += self.xml_snippet_use_var(name)
-                '''# Expect variable name
-                out_xml += self.xml_snippet(['identifier'])'''
                 # Expect [
                 out_xml += self.xml_snippet(['symbol'])
                 # Expect expression
@@ -310,8 +282,6 @@ class CompilationEngine:
                 # Expect variable name
                 name = self.get_token_advance()
                 out_xml += self.xml_snippet_use_var(name)
-                '''# Expect variable name
-                out_xml += self.xml_snippet(['identifier'])'''
         out_xml += self.end_rule('term')
         return out_xml
 
@@ -396,7 +366,7 @@ class CompilationEngine:
         out_xml += self.end_rule('whileStatement')
         return out_xml
 
-    def compile_let_statement(self):  # TODO Look to outerscope properly
+    def compile_let_statement(self):
         """ Responsible for parsing a let statement
 
         :return: (String) XML Representation
@@ -407,8 +377,6 @@ class CompilationEngine:
         # Expect varName
         name = self.get_token_advance()
         out_xml += self.xml_snippet_use_var(name)
-        '''# Expect varName
-        out_xml += self.xml_snippet(['identifier'])'''
         # Expect either a [ or =
         if self.current_token.get_val() == '[':
             # Expect a [
@@ -502,18 +470,12 @@ class CompilationEngine:
         if method:
             out_xml += self.add_symbol('this', self.class_name, kind)
         if self.current_token.get_val() != ')':
-            # TODO adjust the code below until the next todo with the new symboltable
             # Expect type
             j_type = self.get_token_advance()
             # Expect a variable name
             name = self.get_token_advance()
             # Add symbol to table and output xml code
             out_xml += self.add_symbol(name, j_type, kind)
-            # TODO Remove old code
-            '''# Expect type
-            out_xml += self.xml_snippet(['keyword', 'identifier'])  # Could be an indentifier
-            # Expect variable name
-            out_xml += self.xml_snippet(['identifier'])'''
             # If a comma is encountered then repeat the following
             while self.current_token.get_val() == ',':
                 # Expect a ,
@@ -524,11 +486,6 @@ class CompilationEngine:
                 name = self.get_token_advance()
                 # Add symbol to table and output xml code
                 out_xml += self.add_symbol(name, j_type, kind)
-                # TODO Remove old code
-                '''# Expect type
-                out_xml += self.xml_snippet(['keyword', 'identifier'])  # Could be an indentifier
-                # Expect variable name
-                out_xml += self.xml_snippet(['identifier'])'''
         out_xml += self.end_rule('parameterList')
         return out_xml
 
@@ -596,8 +553,10 @@ class CompilationEngine:
             out_xml += self.compile_class_var_dec()
         # Possibly expect subroutine declarations
         while self.current_token.get_val() in ('constructor', 'function', 'method'):
+            # Check if table has a parent, if it does then increment scope
             if self.scope_table.parent_table is not None:
                 self.scope_table = self.scope_table.parent_table
+            # Create a new sub scope table and set the current scope to this table
             self.scope_table = self.scope_table.start_subroutine()
             # Expect a subroutine declaration
             out_xml += self.compile_subroutine_dec()
