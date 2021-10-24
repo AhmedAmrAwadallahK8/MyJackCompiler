@@ -504,31 +504,39 @@ class CompilationEngine:
         return out_xml
 
     def compile_subroutine_dec(self):
-        """Responsible for parsing a subroutine declaration
+        """Responsible for compiling a subroutine declaration
 
-        :return: (String) XML representation
+        :return: (String) VM Translation
         """
-        out_xml = self.start_rule('subroutineDec')
+        out_vm = self.start_rule('subroutineDec')
         # Expect constructor, function, or method
         method = False
+        constructor = False
+        function = False
+        void = False
         if self.get_token() == 'method':
             method = True
-        out_xml += self.xml_snippet(['keyword'])
+        elif self.get_token() == 'constructor':
+            constructor = True
+        elif self.get_token() == 'function':
+            function = True
+        self.next_token()
         # Expect void or type
-        out_xml += self.xml_snippet(['keyword', 'identifier'])  # Technically this can also expect an identifier
+        if self.get_token() == 'void':
+            void = True
+        self.next_token()
         # Expect subroutine name
-        out_xml += self.xml_snippet(['identifier'])
+        self.next_token()
         # Expect a (
-        out_xml += self.xml_snippet(['symbol'])
+        self.next_token()
         # Expect a parameter list
-        out_xml += self.compile_parameter_list(method)
+        out_vm += self.compile_parameter_list(method) # TODO check if this returns anything useful
         # Expect a )
-        out_xml += self.xml_snippet(['symbol'])
+        self.next_token()
         # Expect subroutine body
-        out_xml += self.compile_subroutine_body()
-
-        out_xml += self.end_rule('subroutineDec')
-        return out_xml
+        out_vm += self.compile_subroutine_body() # TODO check if this returns useful information
+        out_vm += self.end_rule('subroutineDec')
+        return out_vm
 
     def compile_class(self):
         """ Responsible for compiling a class
@@ -545,7 +553,7 @@ class CompilationEngine:
         # Possibly expect class variable declarations
         while self.current_token.get_val() in ('static', 'field'):
             # Expect a class variable declaration
-            self.compile_class_var_dec()  # This process outputs no code # TODO
+            self.compile_class_var_dec()  # This process outputs no code
         # Possibly expect subroutine declarations
         while self.current_token.get_val() in ('constructor', 'function', 'method'):
             # Check if table has a parent, if it does then increment scope
@@ -554,7 +562,7 @@ class CompilationEngine:
             # Create a new sub scope table and set the current scope to this table
             self.scope_table = self.scope_table.start_subroutine()
             # Expect a subroutine declaration
-            out_vm += self.compile_subroutine_dec() # TODO
+            out_vm += self.compile_subroutine_dec()  # TODO check if useful code is returned
         # Expect }
         self.next_token()  # Do Nothing
         out_vm += self.end_rule('class')
