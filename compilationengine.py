@@ -183,18 +183,20 @@ class CompilationEngine:
         j_type = self.get_token_advance()
         # Expect a variable name
         name = self.get_token_advance()
-        out_xml += self.add_symbol(name, j_type, kind)
+        # Update scope table
+        self.scope_table.define(name, j_type, kind)
         # Expect ; or expect , and then a variable name repeating until ; is met
         while self.current_token.get_val() != ';' and self.current_token.get_val() != 'final token':
             # Expect a comma
-            out_xml += self.xml_snippet(['symbol'])
+            self.next_token()
             # Expect a variable name
             name = self.get_token_advance()
-            out_xml += self.add_symbol(name, j_type, kind)
+            # Update scope table
+            self.scope_table.define(name, j_type, kind)
         # Expect a ;
-        out_xml += self.xml_snippet(['symbol'])
-        out_xml += self.end_rule('classVarDec')
-        return out_xml
+        self.next_token()
+        out_vm += self.end_rule('classVarDec')
+        return out_vm
 
     def compile_var_dec(self):
         """Responsible for parsing a variable declaration
