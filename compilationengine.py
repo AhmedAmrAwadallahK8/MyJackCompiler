@@ -381,7 +381,7 @@ class CompilationEngine:
         out_xml += self.end_rule('whileStatement')
         return out_xml
 
-    def compile_let_statement(self): # TODO
+    def compile_let_statement(self):
         """ Responsible for compiling a let statement
 
         :return: (String) VM Translation
@@ -407,16 +407,21 @@ class CompilationEngine:
             self.next_token()
             # Add base array index and selected index together
             out_vm += vmw.write_arithmetic(op='+')
-            # Pop this value into THAT
-            out_vm += vmw.write_pop('pointer', '1')
         # Expect a =
         self.next_token()
         # Expect an expression: This expression is what we set the variable equal to
         out_vm += self.compile_expression() # TODO
+        # Pop this value into temp 0
+        out_vm += vmw.write_pop('temp', '0')
         # Expect a ;
         self.next_token()
         # Let statement is now complete, store expression value in variable memory
         if is_array:
+            # Pop array memory index into THAT
+            out_vm += vmw.write_pop('pointer', '1')
+            # Push the expression we are assinging the variable to back on stack
+            out_vm += vmw.write_push('temp', '0')
+            # Pop this value into the array index memory location
             out_vm += vmw.write_pop('that', '0')
         else:
             j_type, kind, index = self.var_info(var_name)
