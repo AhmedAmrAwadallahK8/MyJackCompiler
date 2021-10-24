@@ -67,5 +67,5 @@ def main(sys_input):
 
 
 # user_input = sys.argv[1]
-main('ExpressionLessSquare')
+main('Average')
 
