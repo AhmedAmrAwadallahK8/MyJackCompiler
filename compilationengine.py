@@ -199,29 +199,29 @@ class CompilationEngine:
         return out_vm
 
     def compile_var_dec(self):
-        """Responsible for parsing a variable declaration
+        """Responsible for compiling a variable declaration
 
-        :return: (String) XML representation
+        :return: (String) VM Translation
         """
-        out_xml = self.start_rule('varDec')
+        out_vm = self.start_rule('varDec')
         # Expect Keyword = var
         kind = self.get_token_advance()
         # Expect a type
         j_type = self.get_token_advance()
         # Expect a variable name
         name = self.get_token_advance()
-        out_xml += self.add_symbol(name, j_type, kind)
+        self.add_symbol(name, j_type, kind)
         # Expect ; or expect more variable names
         while self.current_token.get_val() != ';' and self.current_token.get_val() != 'final token':
             # Expect a comma
-            out_xml += self.xml_snippet(['symbol'])
+            self.next_token()
             # Expect a variable name
             name = self.get_token_advance()
-            out_xml += self.add_symbol(name, j_type, kind)
+            self.add_symbol(name, j_type, kind)
         # Expect a ;
-        out_xml += self.xml_snippet(['symbol'])
-        out_xml += self.end_rule('varDec')
-        return out_xml
+        self.next_token()
+        out_vm += self.end_rule('varDec')
+        return out_vm
 
     def compile_term(self):
         """Responsible for parsing a term
@@ -485,7 +485,7 @@ class CompilationEngine:
         out_vm += self.end_rule('parameterList')
         return out_vm
 
-    def compile_subroutine_body(self): #TODO
+    def compile_subroutine_body(self, is_constructor):
         """ Responsible for compiling a subroutine body
 
         :return: (String) VM Translation
@@ -495,7 +495,11 @@ class CompilationEngine:
         self.next_token()
         # Expect variable declaration if current token represents var
         while self.current_token.get_val() == 'var':
-            self.compile_var_dec() # TODO
+            self.compile_var_dec()
+        if is_constructor:
+            # constructor vm code
+            out_vm += ''
+            out_vm += 'call Memory.alloc'
         # Expect statements
         out_vm += self.compile_statements() # TODO
         # Expect }

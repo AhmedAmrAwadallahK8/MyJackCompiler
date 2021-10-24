@@ -87,21 +87,22 @@ def write_if(tar_label):
     return vm_out
 
 
-def write_call(subroutine_name, num_args):
+def write_call(class_name, subroutine_name, num_args):
     """VM function call code
 
+    :param class_name: (String) name of class subroutine belongs to
     :param subroutine_name: (String) name of subroutine
     :param num_args: (int) number of arguments the function requires
     :return: (String) VM Translation
     """
-    vm_out = 'call ' + subroutine_name + ' ' + num_args + '\n'
+    vm_out = 'call ' + class_name + '.' + subroutine_name + ' ' + num_args + '\n'
     return vm_out
 
 
 def write_function(class_name, subroutine_name, num_vars):
     """VM function initialization code
 
-    :param class_name:
+    :param class_name: (String) name of class subroutine belongs to
     :param subroutine_name: (String) name of subroutine
     :param num_vars: (int) number of variables the function requires
     :return: (String) VM Translation
