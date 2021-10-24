@@ -5,7 +5,7 @@ import symboltable as st
 
 
 class CompilationEngine:
-    ops = ('+', '-', '*', '/', '&gt;', '&lt;', '=', '|', '&amp;')
+    ops = ('+', '-', '*', '/', '>', '<', '=', '|', '&')
     unary_ops = ('-', '~')
     keyword_constant = ('true', 'false', 'null', 'this')
     jack_statements = ('let', 'do', 'while', 'if', 'return')

@@ -112,14 +112,14 @@ class JackTokenizer:
                     i += len_int_tok - 1  # Move the index past the entire integer that handle_int found
                     o_i = i
                 elif tok in self.symbol:  # Condition indicates a Symbol Token is present
-                    if tok == '<':
+                    '''if tok == '<':
                         self.tack_code.append(t.JackToken('symbol', '&lt;'))
                     elif tok == '>':
                         self.tack_code.append(t.JackToken('symbol', '&gt;'))
                     elif tok == '&':
                         self.tack_code.append(t.JackToken('symbol', '&amp;'))
-                    else:
-                        self.tack_code.append(t.JackToken('symbol', tok))
+                    else:'''
+                    self.tack_code.append(t.JackToken('symbol', tok))
                     o_i = i
                 elif tok in self.keyword:  # Condition indicates a Keyword Token is present
                     self.tack_code.append(t.JackToken('keyword', tok))

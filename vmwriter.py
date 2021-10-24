@@ -1,15 +1,30 @@
 
 def write_push(kind, index):
+    """VM push command code
+
+    :param kind: Kind of memory segment
+    :param index: Allocated memory index
+    :return: (String) VM Translation
+    """
     vm_out = 'push ' + kind + ' ' + index + '\n'
     return vm_out
 
 
 def write_pop(kind, index):
+    """VM pop command code
+
+    :param kind: Kind of memory segment
+    :param index: Allocated memory index
+    :return: (String) VM Translation
+    """
     vm_out = 'pop ' + kind + ' ' + index + '\n'
     return vm_out
 
-
-def write_arithmetic():
+    ops = ('+', '-', '*', '/', '&gt;', '&lt;', '=', '|', '&amp;')
+    unary_ops = ('-', '~')
+def write_arithmetic(op=None, unary_op=None):
+    if op:
+        of
     pass
 
 
