@@ -112,6 +112,24 @@ class CompilationEngine:
 
         return xml_code
 
+    def var_info(self, name):
+        """ Outputs variable information from the symbol table if it exists in any scope, otherwise outputs None
+
+        :param name: (String) Name of the variable
+        :return: (String) Jack Type, Memory Kind, Memory Index or (None)
+        """
+        j_t = '' # Jack Type
+        k = ''  # Memory Kind
+        k_i = '' # Memory Index
+        current_scope = self.scope_table
+        while current_scope is not None:
+            if name not in current_scope.table.keys():
+                current_scope = current_scope.parent_table
+            else:
+                return current_scope.type_of(name), current_scope.kind_of(name), current_scope.index_of(name)
+        else:
+            return None # This identifier is either a class name or subroutine
+
     def get_token(self):
         """ Returns the value stored in current token
 
@@ -318,25 +336,25 @@ class CompilationEngine:
         xml_out += self.end_rule('expressionList')
         return xml_out
 
-    def compile_statements(self): # TODO
-        """Responsible for dealing with multiple statements and selecting the right parser for them
+    def compile_statements(self):
+        """Responsible for dealing with multiple statements and selecting the right compiler for them
 
-        :return: (String) XML representation
+        :return: (String) VM Translation
         """
         out_vm = self.start_rule('statements')
         # Keep looping if our current token value represents a jack statement
         while self.current_token.get_val() in self.jack_statements:
             # Find what type of statement then enter that statements method
             if self.current_token.get_val() == 'let':
-                out_vm += self.compile_let_statement()
+                out_vm += self.compile_let_statement() # TODO
             elif self.current_token.get_val() == 'if':
-                out_vm += self.compile_if_statement()
+                out_vm += self.compile_if_statement() #TODO
             elif self.current_token.get_val() == 'while':
-                out_vm += self.compile_while_statement()
+                out_vm += self.compile_while_statement() #TODO
             elif self.current_token.get_val() == 'do':
-                out_vm += self.compile_do_statement()
+                out_vm += self.compile_do_statement() # TODO
             elif self.current_token.get_val() == 'return':
-                out_vm += self.compile_return_statement()
+                out_vm += self.compile_return_statement() # TODO
         out_vm += self.end_rule('statements')
         return out_vm
 
@@ -363,33 +381,48 @@ class CompilationEngine:
         out_xml += self.end_rule('whileStatement')
         return out_xml
 
-    def compile_let_statement(self):
-        """ Responsible for parsing a let statement
+    def compile_let_statement(self): # TODO
+        """ Responsible for compiling a let statement
 
-        :return: (String) XML Representation
+        :return: (String) VM Translation
         """
-        out_xml = self.start_rule('letStatement')
+        is_array = False
+        out_vm = self.start_rule('letStatement')
         # Expect let
-        out_xml += self.xml_snippet(['keyword'])
+        self.next_token()
         # Expect varName
-        name = self.get_token_advance()
-        out_xml += self.xml_snippet_use_var(name)
+        var_name = self.get_token_advance()
+        ## out_xml += self.xml_snippet_use_var(name)
         # Expect either a [ or =
         if self.current_token.get_val() == '[':
+            is_array = True
+            j_type, kind, index = self.var_info(var_name)
             # Expect a [
-            out_xml += self.xml_snippet(['symbol'])
-            # Expect an expression
-            out_xml += self.compile_expression()
+            self.next_token()
+            # Put array memory location on to stack
+            out_vm += vmw.write_push(kind, index)
+            # Expect an expression: This expression is used for the array index
+            out_vm += self.compile_expression() # TODO ARRAYS
             # Expect a ]
-            out_xml += self.xml_snippet(['symbol'])
+            self.next_token()
+            # Add base array index and selected index together
+            out_vm += vmw.write_arithmetic(op='+')
+            # Pop this value into THAT
+            out_vm += vmw.write_pop('pointer', '1')
         # Expect a =
-        out_xml += self.xml_snippet(['symbol'])
-        # Expect an expression
-        out_xml += self.compile_expression()
+        self.next_token()
+        # Expect an expression: This expression is what we set the variable equal to
+        out_vm += self.compile_expression() # TODO
         # Expect a ;
-        out_xml += self.xml_snippet(['symbol'])
-        out_xml += self.end_rule('letStatement')
-        return out_xml
+        self.next_token()
+        # Let statement is now complete, store expression value in variable memory
+        if is_array:
+            out_vm += vmw.write_pop('that', '0')
+        else:
+            j_type, kind, index = self.var_info(var_name)
+            out_vm += vmw.write_pop(kind, index)
+            out_vm += self.end_rule('letStatement')
+        return out_vm
 
     def compile_do_statement(self):
         """Responsible for parsing a do statement
