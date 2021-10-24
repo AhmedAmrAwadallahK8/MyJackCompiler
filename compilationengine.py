@@ -184,7 +184,7 @@ class CompilationEngine:
         # Expect a variable name
         name = self.get_token_advance()
         # Update scope table
-        self.scope_table.define(name, j_type, kind)
+        self.add_symbol(name, j_type, kind)
         # Expect ; or expect , and then a variable name repeating until ; is met
         while self.current_token.get_val() != ';' and self.current_token.get_val() != 'final token':
             # Expect a comma
@@ -192,7 +192,7 @@ class CompilationEngine:
             # Expect a variable name
             name = self.get_token_advance()
             # Update scope table
-            self.scope_table.define(name, j_type, kind)
+            self.add_symbol(name, j_type, kind)
         # Expect a ;
         self.next_token()
         out_vm += self.end_rule('classVarDec')
@@ -455,53 +455,53 @@ class CompilationEngine:
         out_xml += self.end_rule('returnStatement')
         return out_xml
 
-    def compile_parameter_list(self, method):
-        """ Responsible for parsing a parameter list
+    def compile_parameter_list(self, is_method):
+        """ Responsible for compiling a parameter list
 
-        :return: (String) XML representation
+        :return: (String) VM Translation
         """
-        out_xml = self.start_rule('parameterList')
+        out_vm = self.start_rule('parameterList')
         # Since this is a method param list the kind is implicit
         kind = 'argument'
-        if method:
-            out_xml += self.add_symbol('this', self.class_name, kind)
+        if is_method:
+            out_vm += self.add_symbol('this', self.class_name, kind)
         if self.current_token.get_val() != ')':
             # Expect type
             j_type = self.get_token_advance()
             # Expect a variable name
             name = self.get_token_advance()
-            # Add symbol to table and output xml code
-            out_xml += self.add_symbol(name, j_type, kind)
+            # Add symbol to table
+            self.add_symbol(name, j_type, kind)
             # If a comma is encountered then repeat the following
             while self.current_token.get_val() == ',':
                 # Expect a ,
-                out_xml += self.xml_snippet(['symbol'])
+                self.next_token()
                 # Expect type
                 j_type = self.get_token_advance()
                 # Expect a variable name
                 name = self.get_token_advance()
                 # Add symbol to table and output xml code
-                out_xml += self.add_symbol(name, j_type, kind)
-        out_xml += self.end_rule('parameterList')
-        return out_xml
+                self.add_symbol(name, j_type, kind)
+        out_vm += self.end_rule('parameterList')
+        return out_vm
 
-    def compile_subroutine_body(self):
-        """ Responsible for parsing a subroutine body
+    def compile_subroutine_body(self): #TODO
+        """ Responsible for compiling a subroutine body
 
-        :return: (String) XML Representation
+        :return: (String) VM Translation
         """
-        out_xml = self.start_rule('subroutineBody')
+        out_vm = self.start_rule('subroutineBody')
         # Expect a {
-        out_xml += self.xml_snippet(['symbol'])
+        self.next_token()
         # Expect variable declaration if current token represents var
         while self.current_token.get_val() == 'var':
-            out_xml += self.compile_var_dec()
+            self.compile_var_dec() # TODO
         # Expect statements
-        out_xml += self.compile_statements()
+        out_vm += self.compile_statements() # TODO
         # Expect }
-        out_xml += self.xml_snippet(['symbol'])
-        out_xml += self.end_rule('subroutineBody')
-        return out_xml
+        self.next_token()
+        out_vm += self.end_rule('subroutineBody')
+        return out_vm
 
     def compile_subroutine_dec(self):
         """Responsible for compiling a subroutine declaration
@@ -530,11 +530,11 @@ class CompilationEngine:
         # Expect a (
         self.next_token()
         # Expect a parameter list
-        out_vm += self.compile_parameter_list(method) # TODO check if this returns anything useful
+        self.compile_parameter_list(method)
         # Expect a )
         self.next_token()
         # Expect subroutine body
-        out_vm += self.compile_subroutine_body() # TODO check if this returns useful information
+        out_vm += self.compile_subroutine_body(constructor) # TODO check if this returns useful information
         out_vm += self.end_rule('subroutineDec')
         return out_vm
 
