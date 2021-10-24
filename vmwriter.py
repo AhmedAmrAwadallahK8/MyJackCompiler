@@ -98,14 +98,15 @@ def write_call(subroutine_name, num_args):
     return vm_out
 
 
-def write_function(subroutine_name, num_vars):
+def write_function(class_name, subroutine_name, num_vars):
     """VM function initialization code
 
+    :param class_name:
     :param subroutine_name: (String) name of subroutine
     :param num_vars: (int) number of variables the function requires
     :return: (String) VM Translation
     """
-    vm_out = 'function ' + subroutine_name + ' ' + num_vars + '\n'
+    vm_out = 'function ' + class_name + '.' + subroutine_name + ' ' + num_vars + '\n'
     return vm_out
 
 
