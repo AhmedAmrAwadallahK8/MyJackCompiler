@@ -2,6 +2,7 @@ import jacktokenizer as jt
 import filemediator as fm
 import jackjanitor as jj
 import symboltable as st
+import vmwriter as vmw
 
 
 class CompilationEngine:
@@ -317,27 +318,27 @@ class CompilationEngine:
         xml_out += self.end_rule('expressionList')
         return xml_out
 
-    def compile_statements(self):
+    def compile_statements(self): # TODO
         """Responsible for dealing with multiple statements and selecting the right parser for them
 
         :return: (String) XML representation
         """
-        out_xml = self.start_rule('statements')
+        out_vm = self.start_rule('statements')
         # Keep looping if our current token value represents a jack statement
         while self.current_token.get_val() in self.jack_statements:
             # Find what type of statement then enter that statements method
             if self.current_token.get_val() == 'let':
-                out_xml += self.compile_let_statement()
+                out_vm += self.compile_let_statement()
             elif self.current_token.get_val() == 'if':
-                out_xml += self.compile_if_statement()
+                out_vm += self.compile_if_statement()
             elif self.current_token.get_val() == 'while':
-                out_xml += self.compile_while_statement()
+                out_vm += self.compile_while_statement()
             elif self.current_token.get_val() == 'do':
-                out_xml += self.compile_do_statement()
+                out_vm += self.compile_do_statement()
             elif self.current_token.get_val() == 'return':
-                out_xml += self.compile_return_statement()
-        out_xml += self.end_rule('statements')
-        return out_xml
+                out_vm += self.compile_return_statement()
+        out_vm += self.end_rule('statements')
+        return out_vm
 
     def compile_while_statement(self):
         """Responsible for parsing a while statement
@@ -485,7 +486,7 @@ class CompilationEngine:
         out_vm += self.end_rule('parameterList')
         return out_vm
 
-    def compile_subroutine_body(self, is_constructor):
+    def compile_subroutine_body(self, is_constructor): # TODO
         """ Responsible for compiling a subroutine body
 
         :return: (String) VM Translation
@@ -497,9 +498,10 @@ class CompilationEngine:
         while self.current_token.get_val() == 'var':
             self.compile_var_dec()
         if is_constructor:
-            # constructor vm code
-            out_vm += ''
-            out_vm += 'call Memory.alloc'
+            # Constructor vm code
+            out_vm += vmw.write_push('constant', self.scope_table.var_count('field'))
+            out_vm += vmw.write_call('Memory', 'alloc', '1')
+            out_vm += vmw.write_pop('pointer', '0')
         # Expect statements
         out_vm += self.compile_statements() # TODO
         # Expect }
