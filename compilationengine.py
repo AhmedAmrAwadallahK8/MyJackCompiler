@@ -36,28 +36,24 @@ class CompilationEngine:
             print('No more tokens left')
 
     def start_rule(self, rule):
-        """Returns xml code that represents the beginning of a rule and increments number of tabs by 1
+        """Returns vm comment that represents the beginning of a rule
 
         :param rule: (String) Rule we are parsing
         :return: (String) XML Representation
         """
-        #self.tab_num += 1
-        out_xml = '\t' * self.tab_num
-        out_xml += '<' + rule + '>\n'
-        self.tab_num += 1
-        return out_xml
+
+        out_vm = '//Start ' + rule
+        return out_vm
 
     def end_rule(self, rule):
-        """Returns xml code that represents the end of a rule and decrements number of tabs by 1
+        """Returns vm comment that represents the end of a rule
 
         :param rule: (String) Rule we are parsing
         :return: (String) XML Representation
         """
-        self.tab_num -= 1
-        out_xml = '\t' * self.tab_num
-        out_xml += '</' + rule + '>\n'
-        #self.tab_num -= 1
-        return out_xml
+
+        out_vm = '//End ' + rule
+        return out_vm
 
     def xml_snippet(self, exp_variety):
         """ Returns XML code pertaining to the current token, if the variety of the token is not expected this will
@@ -182,7 +178,7 @@ class CompilationEngine:
 
         :return: (String) XML representation
         """
-        out_xml = self.start_rule('classVarDec')
+        out_vm = self.start_rule('classVarDec')
         # Expect Keyword = static or field
         kind = self.get_token_advance()
         # Expect a type
@@ -535,22 +531,21 @@ class CompilationEngine:
         return out_xml
 
     def compile_class(self):
-        """ Responsible for parsing a class
+        """ Responsible for compiling a class
 
-        :return: (String) XML representation
+        :return: (String) VM Translation
         """
-        out_xml = self.start_rule('class')
+        out_vm = self.start_rule('class')
         # Expect class
-        out_xml += self.xml_snippet(['keyword'])
+        self.next_token()  # Do Nothing
         # Expect class name
-        self.class_name = self.get_token()
-        out_xml += self.xml_snippet(['identifier'])
+        self.class_name = self.get_token_advance()
         # Expect {
-        out_xml += self.xml_snippet(['symbol'])
+        self.next_token()  # Do Nothing
         # Possibly expect class variable declarations
         while self.current_token.get_val() in ('static', 'field'):
             # Expect a class variable declaration
-            out_xml += self.compile_class_var_dec()
+            self.compile_class_var_dec()  # This process outputs no code # TODO
         # Possibly expect subroutine declarations
         while self.current_token.get_val() in ('constructor', 'function', 'method'):
             # Check if table has a parent, if it does then increment scope
@@ -559,11 +554,11 @@ class CompilationEngine:
             # Create a new sub scope table and set the current scope to this table
             self.scope_table = self.scope_table.start_subroutine()
             # Expect a subroutine declaration
-            out_xml += self.compile_subroutine_dec()
+            out_vm += self.compile_subroutine_dec() # TODO
         # Expect }
-        out_xml += self.xml_snippet(['symbol'])
-        out_xml += self.end_rule('class')
-        return out_xml
+        self.next_token()  # Do Nothing
+        out_vm += self.end_rule('class')
+        return out_vm
 
     def start_compilation_engine(self):
         """ Responsible for directing files to be compiled. Once compilation is complete the data is loaded into a file
@@ -577,7 +572,7 @@ class CompilationEngine:
             self.current_token = self.current_tokenizer.get_ind_token()
             xml_code = self.compile_class()
             # TODO Eventaully change .xml to .vm
-            fm.load_file(self.current_tokenizer.get_file_name(), '.xml', xml_code, self.folder_name)
+            fm.load_file(self.current_tokenizer.get_file_name(), '.vm', xml_code, self.folder_name)
 
 
 
