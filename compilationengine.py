@@ -164,14 +164,12 @@ class CompilationEngine:
         return xml_out
 
     def add_symbol(self, name, j_type, kind):
-        """Adds symbol to table and makes xml snippet for it
+        """Adds symbol to table
 
-        :return: XML Representation
+        :return: None
         """
         # Create a new scope variable
         self.scope_table.define(name, j_type, kind)
-        # Create new xml declaration code
-        return self.xml_snippet_declare(name)
 
     def compile_class_var_dec(self):
         """Responsible for parsing a class variable declaration
