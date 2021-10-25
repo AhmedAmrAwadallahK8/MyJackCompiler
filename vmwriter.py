@@ -20,8 +20,7 @@ def write_pop(kind, index):
     vm_out = 'pop ' + kind + ' ' + index + '\n'
     return vm_out
 
-    ops = ('+', '-', '*', '/', '&gt;', '&lt;', '=', '|', '&amp;')
-    unary_ops = ('-', '~')
+
 def write_arithmetic(op=None, unary_op=None):
     """VM op code
 

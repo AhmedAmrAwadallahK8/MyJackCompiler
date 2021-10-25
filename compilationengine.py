@@ -242,63 +242,82 @@ class CompilationEngine:
         out_vm += self.end_rule('varDec')
         return out_vm
 
+    #keyword_constant = ('true', 'false', 'null', 'this')
     def compile_term(self): # TODO
-        """Responsible for parsing a term
+        """Responsible for compiling a term
 
-        :return: (String) XML representation
+        :return: (String) VM Translation
         """
 
-        out_xml = self.start_rule('term')
+        out_vm = self.start_rule('term')
         # We expect a term to be here but there are a variety of terms that could occur
         # Integer encountered
         if self.current_token.get_variety() == 'integerConstant':
             # Expect integer
-            out_xml += self.xml_snippet(['integerConstant'])
+            integer_constant = self.get_token_advance()
+            out_vm += vmw.write_push('constant', integer_constant)
         # String encountered
         elif self.current_token.get_variety() == 'stringConstant':
             # Expect String
-            out_xml += self.xml_snippet(['stringConstant'])
+            string_constant = self.get_token_advance() #TODO not sure how to handle strings
+            out_vm += ''
         # Keyword constant encountered
         elif self.current_token.get_val() in self.keyword_constant:
             # Expect keyword constant
-            out_xml += self.xml_snippet(['keyword'])
+            kw_constant = self.get_token_advance()
+            if kw_constant == 'true':
+                out_vm += vmw.write_push('constant', '0')
+                out_vm += vmw.write_arithmetic(unary_op='-')
+            elif kw_constant == 'false':
+                out_vm += vmw.write_push('constant', '0')
+            elif kw_constant == 'null':
+                out_vm += vmw.write_push('constant', '0')
+            elif kw_constant == 'this':
+                out_vm += vmw.write_push('pointer', '0')
         # Unary op term encountered
         elif self.current_token.get_val() in self.unary_ops:
             # Expect a unary op
-            out_xml += self.xml_snippet(['symbol'])
+            unary_op = self.get_token_advance()
             # Expect a term
-            out_xml += self.compile_term()
+            out_vm += self.compile_term()
+            out_vm += vmw.write_arithmetic(unary_op=unary_op)
         # ( encountered
         elif self.current_token.get_val() == '(':
             # Expect (
-            out_xml += self.xml_snippet(['symbol'])
+            self.get_token_advance()
             # Expect expression
-            out_xml += self.compile_expression()
+            out_vm += self.compile_expression()
             # Expect )
-            out_xml += self.xml_snippet(['symbol'])
+            self.get_token_advance()
         elif self.current_token.get_variety() == 'identifier':
             # If we have an identifier type token then there are three possibilites
             # Need to look ahead 1 token to decipher what to do with the current token (LL2)
             if self.current_tokenizer.peek_next_token().get_val() == '[':  # Arraylike variable
                 # Expect variable name
                 name = self.get_token_advance()
-                out_xml += self.xml_snippet_use_var(name)
+                j_type, kind, index = self.var_info(name)
+                out_vm += vmw.write_push(kind, index)
                 # Expect [
-                out_xml += self.xml_snippet(['symbol'])
+                self.get_token_advance()
                 # Expect expression
-                out_xml += self.compile_expression()
+                out_vm += self.compile_expression()
                 # Expect ]
-                out_xml += self.xml_snippet(['symbol'])
+                self.get_token_advance()
+                # VM code for accessing specified value in array
+                out_vm += vmw.write_arithmetic(op='+')
+                out_vm += vmw.write_pop('pointer', '1')
+                out_vm += vmw.write_push('that', '0')
             elif (self.current_tokenizer.peek_next_token().get_val() == '(' or
                   self.current_tokenizer.peek_next_token().get_val() == '.'):  # SubroutineCall
                 # Expect subroutine call
-                out_xml += self.subroutine_call()
+                out_vm += self.subroutine_call() # TODO
             else:  # variable
                 # Expect variable name
                 name = self.get_token_advance()
-                out_xml += self.xml_snippet_use_var(name)
-        out_xml += self.end_rule('term')
-        return out_xml
+                j_type, kind, index = self.var_info(name)
+                out_vm += vmw.write_push(kind, index)
+        out_vm += self.end_rule('term')
+        return out_vm
 
     def compile_expression(self):
         """ Responsible for compiling an expression
