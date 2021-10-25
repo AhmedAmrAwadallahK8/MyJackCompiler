@@ -450,20 +450,20 @@ class CompilationEngine:
             out_vm += self.end_rule('letStatement')
         return out_vm
 
-    def compile_do_statement(self): # TODO
-        """Responsible for parsing a do statement
+    def compile_do_statement(self):
+        """Responsible for compiling a do statement
 
         :return: (String) XML representation
         """
-        xml_out = self.start_rule('doStatement')
+        vm_out = self.start_rule('doStatement')
         # Expect do
-        xml_out += self.xml_snippet(['keyword'])
+        self.get_token_advance()
         # Expect subroutineCall
-        xml_out += self.subroutine_call()
+        vm_out += self.subroutine_call()
         # Expect a ;
-        xml_out += self.xml_snippet(['symbol'])
-        xml_out += self.end_rule('doStatement')
-        return xml_out
+        self.get_token_advance()
+        vm_out += self.end_rule('doStatement')
+        return vm_out
 
     def compile_if_statement(self): # TODO
         """Responsible for parsing an if statement
