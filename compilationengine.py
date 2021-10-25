@@ -468,7 +468,7 @@ class CompilationEngine:
     def compile_if_statement(self): # TODO
         """Responsible for parsing an if statement
 
-        :return: (String) XML Representation
+        :return: (String) VM Translation
         """
         out_xml = self.start_rule('ifStatement')
         # Expect an if
@@ -499,21 +499,26 @@ class CompilationEngine:
         return out_xml
 
     def compile_return_statement(self): # TODO
-        """Responsible for parsing a return statement
+        """Responsible for compiling a return statement
 
-        :return: (String) XML Representation
+        :return: (String) VM Translation
         """
-        out_xml = self.start_rule('returnStatement')
+        out_vm = self.start_rule('returnStatement')
         # Expect a return
-        out_xml += self.xml_snippet(['keyword'])
+        self.get_token_advance()
         # Expect either an expression or ;
         if self.current_token.get_val() != ';' and self.current_token.get_val() != 'final token':
             # Expect an expression
-            out_xml += self.compile_expression()
+            out_vm += self.compile_expression()
+        else:
+            # If there is no expression this is a void so push some trash value
+            out_vm += vmw.write_push('constant', '0')
         # Expect a ;
-        out_xml += self.xml_snippet(['symbol'])
-        out_xml += self.end_rule('returnStatement')
-        return out_xml
+        self.get_token_advance()
+        # Now the expression is complete write return
+        out_vm += vmw.write_return()
+        out_vm += self.end_rule('returnStatement')
+        return out_vm
 
     def compile_parameter_list(self, is_method):
         """ Responsible for compiling a parameter list
