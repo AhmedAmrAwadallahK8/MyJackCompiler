@@ -242,7 +242,6 @@ class CompilationEngine:
         out_vm += self.end_rule('varDec')
         return out_vm
 
-    #keyword_constant = ('true', 'false', 'null', 'this')
     def compile_term(self): # TODO
         """Responsible for compiling a term
 
@@ -327,36 +326,36 @@ class CompilationEngine:
         op_stack = []
         out_vm = self.start_rule('expression')
         # Expect term
-        out_vm += self.compile_term() # TODO
+        out_vm += self.compile_term()
         # Expect ; or repeating operation then term
         while self.current_token.get_val() in self.ops:
             # Expect Operation
             op_stack.append(self.get_token_advance())
             # Expect term
-            out_vm += self.compile_term() # TODO
+            out_vm += self.compile_term()
         while op_stack:
             op = op_stack.pop()
             out_vm += vmw.write_arithmetic(op=op)
         out_vm += self.end_rule('expression')
         return out_vm
 
-    def compile_expression_list(self): # TODO
-        """Responsible for parsing an expression list
+    def compile_expression_list(self):
+        """Responsible for compiling an expression list
 
-        :return: (String) XML representation
+        :return: (String) VM translation
         """
-        xml_out = self.start_rule('expressionList')
+        vm_out = self.start_rule('expressionList')
         if self.current_token.get_val() != ')':
             # Expect expression
-            xml_out += self.compile_expression()
+            vm_out += self.compile_expression()
             # If next token is , expect more expressions
             while self.current_token.get_val() == ',':
                 # Expect a ,
-                xml_out += self.xml_snippet(['symbol'])
+                self.get_token_advance()
                 # Expect expression
-                xml_out += self.compile_expression()
-        xml_out += self.end_rule('expressionList')
-        return xml_out
+                vm_out += self.compile_expression()
+        vm_out += self.end_rule('expressionList')
+        return vm_out
 
     def compile_statements(self):
         """Responsible for dealing with multiple statements and selecting the right compiler for them
