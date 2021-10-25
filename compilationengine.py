@@ -242,7 +242,7 @@ class CompilationEngine:
         out_vm += self.end_rule('varDec')
         return out_vm
 
-    def compile_term(self):
+    def compile_term(self): # TODO
         """Responsible for parsing a term
 
         :return: (String) XML representation
@@ -301,24 +301,27 @@ class CompilationEngine:
         return out_xml
 
     def compile_expression(self):
-        """ Responsible for parsing an expression
+        """ Responsible for compiling an expression
 
-        :return: (String) XML representation
+        :return: (String) VM Translation
         """
-
-        out_xml = self.start_rule('expression')
+        op_stack = []
+        out_vm = self.start_rule('expression')
         # Expect term
-        out_xml += self.compile_term()
+        out_vm += self.compile_term() # TODO
         # Expect ; or repeating operation then term
         while self.current_token.get_val() in self.ops:
             # Expect Operation
-            out_xml += self.xml_snippet(['symbol'])
+            op_stack.append(self.get_token_advance())
             # Expect term
-            out_xml += self.compile_term()
-        out_xml += self.end_rule('expression')
-        return out_xml
+            out_vm += self.compile_term() # TODO
+        while op_stack:
+            op = op_stack.pop()
+            out_vm += vmw.write_arithmetic(op=op)
+        out_vm += self.end_rule('expression')
+        return out_vm
 
-    def compile_expression_list(self):
+    def compile_expression_list(self): # TODO
         """Responsible for parsing an expression list
 
         :return: (String) XML representation
@@ -358,7 +361,7 @@ class CompilationEngine:
         out_vm += self.end_rule('statements')
         return out_vm
 
-    def compile_while_statement(self):
+    def compile_while_statement(self): # TODO
         """Responsible for parsing a while statement
 
         :return: (String) XML representation
@@ -429,7 +432,7 @@ class CompilationEngine:
             out_vm += self.end_rule('letStatement')
         return out_vm
 
-    def compile_do_statement(self):
+    def compile_do_statement(self): # TODO
         """Responsible for parsing a do statement
 
         :return: (String) XML representation
@@ -444,7 +447,7 @@ class CompilationEngine:
         xml_out += self.end_rule('doStatement')
         return xml_out
 
-    def compile_if_statement(self):
+    def compile_if_statement(self): # TODO
         """Responsible for parsing an if statement
 
         :return: (String) XML Representation
@@ -477,7 +480,7 @@ class CompilationEngine:
         out_xml += self.end_rule('ifStatement')
         return out_xml
 
-    def compile_return_statement(self):
+    def compile_return_statement(self): # TODO
         """Responsible for parsing a return statement
 
         :return: (String) XML Representation
